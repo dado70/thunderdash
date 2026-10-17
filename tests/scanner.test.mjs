@@ -29,6 +29,17 @@ test('listAccountFolders computes defaults and exclusions', async () => {
   assert.equal(byPath['/Sent'].defaultSent, true);
   assert.equal(byPath['/Junk'].excluded, true);
   assert.equal(byPath['/Trash/Old'].excluded, true);
+  assert.equal(byPath['/Trash/Old'].excludedReason, 'parent');
+  assert.equal(byPath['/Trash'].excludedReason, 'trash');
+  assert.equal(byPath['/Junk'].excludedReason, 'junk');
+  assert.equal(byPath['/INBOX/Clienti'].parentKey, 'acc1|/INBOX');
+  assert.equal(byPath['/INBOX/Ricerca'].excludedReason, 'virtual');
+  assert.equal(byPath['/INBOX/Ricerca'].defaultReceive, false);
+  assert.equal(byPath['/INBOX'].parentKey, '');
+  assert.equal(byPath['/INBOX'].hasChildren, true);
+  assert.equal(byPath['/INBOX'].isInbox, true);
+  assert.equal(byPath['/INBOX/Clienti'].isInbox, false);
+  assert.equal(byPath['/Sent'].isSent, true);
   assert.deepEqual(acc.identities, ['me@studio.it']);
 });
 

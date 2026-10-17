@@ -7,6 +7,7 @@ import {
 import { listAccountFolders } from '../src/folders.mjs';
 import { t, localizeDocument, toDateInput, formatDateTime } from '../src/i18n.mjs';
 import { canSendSilently } from '../src/mailer.mjs';
+import { icon } from '../src/icons.mjs';
 import { ensureReplyTag } from '../src/actions.mjs';
 import * as store from '../src/store.mjs';
 
@@ -49,32 +50,124 @@ function checkbox(folder, kind) {
   return input;
 }
 
+// Collapsed account ids / folder keys. Remembered per viewer in localStorage
+// (a convenience only: everything works if storage is unavailable).
+const COLLAPSED_KEY = 'thunderdash.collapsedFolders';
+let collapsed = new Set();
+try {
+  collapsed = new Set(JSON.parse(localStorage.getItem(COLLAPSED_KEY) || '[]'));
+} catch {
+  collapsed = new Set();
+}
+function saveCollapsed() {
+  try {
+    localStorage.setItem(COLLAPSED_KEY, JSON.stringify([...collapsed]));
+  } catch {
+    // Ignore: private mode or blocked storage.
+  }
+}
+
+function toggleButton(key, label) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'icon-only toggle';
+  b.dataset.toggle = key;
+  b.setAttribute('aria-label', label);
+  b.addEventListener('click', () => {
+    if (collapsed.has(key)) collapsed.delete(key);
+    else collapsed.add(key);
+    saveCollapsed();
+    applyCollapsed();
+  });
+  return b;
+}
+
+// Shows/hides rows according to the collapsed ancestors and updates toggles.
+function applyCollapsed() {
+  for (const tr of document.querySelectorAll('#folderRows tr[data-ancestors]')) {
+    const ancestors = tr.dataset.ancestors.split('\n');
+    tr.classList.toggle('hidden', ancestors.some(a => collapsed.has(a)));
+  }
+  for (const b of document.querySelectorAll('#folderRows button[data-toggle]')) {
+    const open = !collapsed.has(b.dataset.toggle);
+    b.setAttribute('aria-expanded', String(open));
+    b.replaceChildren(icon(open ? 'chevron-down' : 'chevron-right'));
+  }
+}
+
 function renderFolders() {
   const rows = [];
   for (const acc of accounts) {
+    const accKey = `account:${acc.id}`;
     const head = document.createElement('tr');
     head.className = 'account-row';
     const td = document.createElement('td');
     td.colSpan = 3;
-    td.textContent = acc.name;
+    const title = document.createElement('span');
+    title.textContent = acc.name;
+    td.append(toggleButton(accKey, t('optToggleAccount', [acc.name])), title);
     head.append(td);
     rows.push(head);
+
+    const ancestorsOf = new Map();
     for (const f of acc.folders) {
+      const ancestors = [accKey, ...(f.parentKey ? [...ancestorsOf.get(f.parentKey), f.parentKey] : [])];
+      ancestorsOf.set(f.key, ancestors.slice(1));
       const tr = document.createElement('tr');
+      tr.dataset.ancestors = ancestors.join('\n');
       if (f.excluded) tr.className = 'excluded';
-      const name = document.createElement('td');
+      const cell = document.createElement('td');
+      const name = document.createElement('div');
       name.className = 'name';
-      name.style.paddingLeft = `${10 + f.depth * 18}px`;
-      name.textContent = f.excluded ? `${f.name} (${t('optExcluded')})` : f.name;
+      name.style.paddingLeft = `${f.depth * 20}px`;
+      cell.append(name);
+      if (f.hasChildren) {
+        name.append(toggleButton(f.key, t('optToggleFolder', [f.name])));
+      } else {
+        const spacer = document.createElement('span');
+        spacer.className = 'toggle-spacer';
+        name.append(spacer);
+      }
+      const label = document.createElement('span');
+      label.textContent = f.name;
+      name.append(label);
+      if (f.excluded) {
+        const why = document.createElement('span');
+        why.className = 'small muted';
+        why.textContent = ` (${t('optExcluded')}: ${t(`excluded_${f.excludedReason}`)})`;
+        name.append(why);
+      }
       const rc = document.createElement('td');
       rc.append(checkbox(f, 'receive'));
       const sc = document.createElement('td');
       sc.append(checkbox(f, 'sent'));
-      tr.append(name, rc, sc);
+      tr.append(cell, rc, sc);
       rows.push(tr);
     }
   }
   $('folderRows').replaceChildren(...rows);
+  applyCollapsed();
+}
+
+/** Checks or unchecks the given column for all Inbox (or Sent) folders. */
+function setAll(kind, flag, value) {
+  for (const acc of accounts) {
+    for (const f of acc.folders) {
+      if (!f[flag] || f.excluded) continue;
+      const input = document.querySelector(
+        `#folderRows input[data-kind="${kind}"][data-key="${CSS.escape(f.key)}"]`);
+      if (input) input.checked = value;
+    }
+  }
+}
+
+function setAllExpanded(open) {
+  collapsed = open ? new Set() : new Set([
+    ...accounts.map(a => `account:${a.id}`),
+    ...accounts.flatMap(a => a.folders.filter(f => f.hasChildren).map(f => f.key))
+  ]);
+  saveCollapsed();
+  applyCollapsed();
 }
 
 function fillForm() {
@@ -430,6 +523,12 @@ async function init() {
       if (!input.disabled) input.checked = input.dataset.default === 'true';
     }
   });
+  $('selectInboxes').addEventListener('click', () => setAll('receive', 'isInbox', true));
+  $('deselectInboxes').addEventListener('click', () => setAll('receive', 'isInbox', false));
+  $('selectSent').addEventListener('click', () => setAll('sent', 'isSent', true));
+  $('deselectSent').addEventListener('click', () => setAll('sent', 'isSent', false));
+  $('expandAll').addEventListener('click', () => setAllExpanded(true));
+  $('collapseAll').addEventListener('click', () => setAllExpanded(false));
   $('exportBackup').addEventListener('click', exportBackup);
   $('importFile').addEventListener('change', importBackup);
   $('clearCache').addEventListener('click', () => run(async () => {

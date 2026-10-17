@@ -27,6 +27,10 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 - **Correspondents to reply to** panel in the dashboard: senders with pending e-mails,
   critical count and oldest pending e-mail, with search; clicking a sender filters the list
   (removable filter chip).
+- Options → Folders: collapsible accounts and folders (expand/collapse all, remembered),
+  buttons to select/deselect all Inboxes and all Sent folders, the "Restore default
+  selection" button moved to the toolbar, and the reason why a folder is excluded
+  (spam, trash, drafts, templates, outbox, saved search, inside an excluded folder).
 - New permissions: `alarms`, `compose.send`, `messages.send` (the latter only on
   Thunderbird 153+, ignored by older versions).
 

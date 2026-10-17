@@ -535,5 +535,59 @@
   },
   "scheduleToHint": {
     "message": "Separa più indirizzi con una virgola. Per una frequenza diversa aggiungi un'altra pianificazione."
+  },
+  "optSelectInboxes": {
+    "message": "Seleziona tutte le Posta in arrivo"
+  },
+  "optDeselectInboxes": {
+    "message": "Deseleziona tutte le Posta in arrivo"
+  },
+  "optSelectSent": {
+    "message": "Seleziona tutte le Posta inviata"
+  },
+  "optDeselectSent": {
+    "message": "Deseleziona tutte le Posta inviata"
+  },
+  "optExpandAll": {
+    "message": "Espandi tutto"
+  },
+  "optCollapseAll": {
+    "message": "Comprimi tutto"
+  },
+  "optToggleAccount": {
+    "message": "Espandi o comprimi l'account $1"
+  },
+  "optToggleFolder": {
+    "message": "Espandi o comprimi la cartella $1"
+  },
+  "excluded_junk": {
+    "message": "spam"
+  },
+  "excluded_trash": {
+    "message": "cestino"
+  },
+  "excluded_drafts": {
+    "message": "bozze"
+  },
+  "excluded_templates": {
+    "message": "modelli"
+  },
+  "excluded_outbox": {
+    "message": "posta in uscita"
+  },
+  "excluded_virtual": {
+    "message": "ricerca salvata / cartella virtuale"
+  },
+  "excluded_tag": {
+    "message": "cartella di tag"
+  },
+  "excluded_unified": {
+    "message": "cartella unificata"
+  },
+  "excluded_parent": {
+    "message": "dentro una cartella esclusa"
+  },
+  "optResetFoldersHint": {
+    "message": "Rilegge da Thunderbird il ruolo di ogni cartella e ripristina la selezione di base: Posta in arrivo e sottocartelle come Ricevute, Posta inviata come Inviate. Premi Salva per applicare."
   }
 }

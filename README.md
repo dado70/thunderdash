@@ -13,8 +13,8 @@ Estensione per **Thunderbird 128 e successivi** che mostra in una dashboard le e
   - in mancanza di queste intestazioni (opzionale) riconosce la risposta dall'oggetto, ripulito dai prefissi `Re:`, `R:`, `Rif:`, `Fwd:`, `I:`, `AW:`… anche ripetuti, purché inviata **dopo** l'email ricevuta e **indirizzata al mittente**.
 - **Tutti gli account**, con selezione delle cartelle
   - di base: Posta in arrivo con le sue sottocartelle (ricevute) e Inviati di tutti gli account (risposte, anche se inviate da un altro account);
-  - nelle Opzioni puoi aggiungere o togliere qualsiasi cartella (es. un Archivio);
-  - Spam, Cestino, Bozze, Modelli e Posta in uscita sono **sempre esclusi**.
+  - nelle Opzioni puoi aggiungere o togliere qualsiasi cartella (es. un Archivio): l'elenco è comprimibile per account e cartella, con pulsanti per selezionare/deselezionare tutte le Posta in arrivo o tutte le Posta inviata e per **ripristinare la selezione predefinita**;
+  - Spam, Cestino, Bozze, Modelli, Posta in uscita e le cartelle di ricerca salvate sono **sempre esclusi** (accanto a ciascuna è indicato il motivo).
 - **Dashboard** in una scheda di Thunderbird, aperta dal pulsante nella barra degli strumenti
   - periodo personalizzabile e scorciatoie 7 / 30 / 90 giorni / 1 anno;
   - riepilogo: in attesa, critiche, in attenzione, transazionali (cliccabili come filtro);

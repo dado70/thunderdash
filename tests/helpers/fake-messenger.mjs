@@ -30,7 +30,10 @@ export function makeMessenger({ messages, headers, pageSize = 2, withGetHeaders 
   };
 
   const root = folder('acc1', '/', 'Root', [], [
-    folder('acc1', '/INBOX', 'Inbox', ['inbox'], [folder('acc1', '/INBOX/Clienti', 'Clienti')]),
+    folder('acc1', '/INBOX', 'Inbox', ['inbox'], [
+      folder('acc1', '/INBOX/Clienti', 'Clienti'),
+      { ...folder('acc1', '/INBOX/Ricerca', 'Ricerca'), isVirtual: true }
+    ]),
     folder('acc1', '/Sent', 'Sent', ['sent']),
     folder('acc1', '/Junk', 'Junk', ['junk']),
     folder('acc1', '/Trash', 'Trash', ['trash'], [folder('acc1', '/Trash/Old', 'Old')])
