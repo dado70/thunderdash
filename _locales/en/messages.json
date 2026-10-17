@@ -1,0 +1,368 @@
+{
+  "extensionName": {
+    "message": "Unanswered Emails Dashboard Pro"
+  },
+  "extensionDescription": {
+    "message": "Dashboard of received emails you have not replied to yet, with ageing, tags and personal notes."
+  },
+  "actionTitle": {
+    "message": "Unanswered emails"
+  },
+  "replyTagName": {
+    "message": "To reply"
+  },
+  "exportCsv": {
+    "message": "Export CSV"
+  },
+  "exportCsvHint": {
+    "message": "Export the rows currently shown"
+  },
+  "options": {
+    "message": "Options"
+  },
+  "optionsTitle": {
+    "message": "Options"
+  },
+  "scanTitle": {
+    "message": "Scan"
+  },
+  "fromDate": {
+    "message": "From"
+  },
+  "toDate": {
+    "message": "To"
+  },
+  "quickRange": {
+    "message": "Quick range"
+  },
+  "range7": {
+    "message": "7 days"
+  },
+  "range30": {
+    "message": "30 days"
+  },
+  "range90": {
+    "message": "90 days"
+  },
+  "range365": {
+    "message": "1 year"
+  },
+  "scan": {
+    "message": "Scan"
+  },
+  "cancel": {
+    "message": "Cancel"
+  },
+  "save": {
+    "message": "Save"
+  },
+  "summary": {
+    "message": "Summary"
+  },
+  "statPending": {
+    "message": "Awaiting reply"
+  },
+  "statCritical": {
+    "message": "Waiting $1+ days"
+  },
+  "statWarning": {
+    "message": "Waiting $1+ days"
+  },
+  "statTransactional": {
+    "message": "Transactional / doubtful"
+  },
+  "results": {
+    "message": "Results"
+  },
+  "view": {
+    "message": "View"
+  },
+  "viewPending": {
+    "message": "To handle"
+  },
+  "viewIgnored": {
+    "message": "Ignored"
+  },
+  "search": {
+    "message": "Search"
+  },
+  "searchPlaceholder": {
+    "message": "Sender, subject or note"
+  },
+  "account": {
+    "message": "Account"
+  },
+  "type": {
+    "message": "Type"
+  },
+  "tag": {
+    "message": "Tag"
+  },
+  "all": {
+    "message": "All"
+  },
+  "typeAction": {
+    "message": "Needs reply"
+  },
+  "typeTransactional": {
+    "message": "Transactional / doubtful"
+  },
+  "hideTransactional": {
+    "message": "Hide transactional"
+  },
+  "colAge": {
+    "message": "Waiting"
+  },
+  "colFrom": {
+    "message": "From"
+  },
+  "colSubject": {
+    "message": "Subject"
+  },
+  "colReceived": {
+    "message": "Received"
+  },
+  "colFolder": {
+    "message": "Folder"
+  },
+  "colTags": {
+    "message": "Tags"
+  },
+  "colType": {
+    "message": "Type"
+  },
+  "colActions": {
+    "message": "Actions"
+  },
+  "countShown": {
+    "message": "$1 shown"
+  },
+  "dayOne": {
+    "message": "1 day"
+  },
+  "dayMany": {
+    "message": "$1 days"
+  },
+  "noSubject": {
+    "message": "(no subject)"
+  },
+  "actionOpen": {
+    "message": "Open message"
+  },
+  "actionReply": {
+    "message": "Reply"
+  },
+  "actionTags": {
+    "message": "Tags"
+  },
+  "actionNote": {
+    "message": "Personal note"
+  },
+  "actionIgnore": {
+    "message": "Ignore (no reply needed)"
+  },
+  "actionRestore": {
+    "message": "Restore"
+  },
+  "outOfRange": {
+    "message": "Outside the scanned range"
+  },
+  "lastScanInfo": {
+    "message": "Last scan: $1 · $2 received and $3 sent messages analyzed"
+  },
+  "neverScanned": {
+    "message": "No scan yet"
+  },
+  "headerErrors": {
+    "message": "headers of $1 sent messages could not be read"
+  },
+  "emptyNoScan": {
+    "message": "Choose a period and press Scan."
+  },
+  "emptyAllDone": {
+    "message": "No unanswered emails in this view."
+  },
+  "emptyIgnored": {
+    "message": "No ignored emails."
+  },
+  "progressSent": {
+    "message": "Reading sent messages: $1"
+  },
+  "progressHeaders": {
+    "message": "Reading reply headers: $1 / $2"
+  },
+  "progressInbox": {
+    "message": "Analyzing received messages: $1"
+  },
+  "tagsTitle": {
+    "message": "Tags"
+  },
+  "noTags": {
+    "message": "No tags defined in Thunderbird."
+  },
+  "noteTitle": {
+    "message": "Personal note"
+  },
+  "deleteNote": {
+    "message": "Delete note"
+  },
+  "toastIgnored": {
+    "message": "Email ignored. You can restore it from the Ignored view."
+  },
+  "toastRestored": {
+    "message": "Email restored."
+  },
+  "toastTagsSaved": {
+    "message": "Tags updated."
+  },
+  "toastNoteSaved": {
+    "message": "Note saved."
+  },
+  "toastNoteDeleted": {
+    "message": "Note deleted."
+  },
+  "toastScanDone": {
+    "message": "Scan completed: $1 emails awaiting reply."
+  },
+  "toastScanCancelled": {
+    "message": "Scan cancelled."
+  },
+  "toastSettingsSaved": {
+    "message": "Settings saved."
+  },
+  "toastImported": {
+    "message": "Backup imported: $1 notes, $2 ignored emails."
+  },
+  "toastCacheCleared": {
+    "message": "Cache cleared."
+  },
+  "toastReplyTag": {
+    "message": "Tag \"$1\" is available."
+  },
+  "errGeneric": {
+    "message": "Error: $1"
+  },
+  "errNoReceiveFolders": {
+    "message": "No folder selected for received mail. Check the Options."
+  },
+  "errMessageNotFound": {
+    "message": "The message no longer exists (moved or deleted). Run a new scan."
+  },
+  "errInvalidBackup": {
+    "message": "The file is not a valid backup of this extension."
+  },
+  "errDateOrder": {
+    "message": "The start date must precede the end date."
+  },
+  "errThresholds": {
+    "message": "The critical threshold must be greater than the warning threshold."
+  },
+  "csvDays": {
+    "message": "Days waiting"
+  },
+  "csvName": {
+    "message": "Sender"
+  },
+  "csvEmail": {
+    "message": "Email"
+  },
+  "csvSubject": {
+    "message": "Subject"
+  },
+  "csvDate": {
+    "message": "Received"
+  },
+  "csvAccount": {
+    "message": "Account"
+  },
+  "csvFolder": {
+    "message": "Folder"
+  },
+  "csvTags": {
+    "message": "Tags"
+  },
+  "csvType": {
+    "message": "Type"
+  },
+  "csvNote": {
+    "message": "Note"
+  },
+  "secGeneral": {
+    "message": "General"
+  },
+  "optWarningDays": {
+    "message": "Warning after (days)"
+  },
+  "optCriticalDays": {
+    "message": "Critical after (days)"
+  },
+  "optDefaultRange": {
+    "message": "Default period (days)"
+  },
+  "optSubjectFallback": {
+    "message": "Also match replies by subject"
+  },
+  "optSubjectFallbackHint": {
+    "message": "Used when a sent message has no In-Reply-To/References headers: a later sent message with the same subject, addressed to the sender, counts as a reply."
+  },
+  "optHideTransactional": {
+    "message": "Hide transactional emails by default"
+  },
+  "secKeywords": {
+    "message": "Transactional emails"
+  },
+  "optKeywordsHint": {
+    "message": "An email is marked as transactional when its sender or subject contains one of these words (one per line, or comma separated)."
+  },
+  "optTransactionalKeywords": {
+    "message": "Keywords"
+  },
+  "optCustomExclusions": {
+    "message": "Your additional keywords or addresses"
+  },
+  "optCustomExclusionsPlaceholder": {
+    "message": "e.g. amazon.it\nshop@example.com"
+  },
+  "optResetKeywords": {
+    "message": "Restore default keywords"
+  },
+  "secFolders": {
+    "message": "Folders"
+  },
+  "optFoldersHint": {
+    "message": "Received: folders searched for emails awaiting reply. Sent: folders searched for your replies. Spam, Trash, Drafts, Templates and Outbox are always excluded."
+  },
+  "optReceived": {
+    "message": "Received"
+  },
+  "optSent": {
+    "message": "Sent"
+  },
+  "optExcluded": {
+    "message": "excluded"
+  },
+  "optResetFolders": {
+    "message": "Restore default selection"
+  },
+  "secData": {
+    "message": "Data and backup"
+  },
+  "optDataHint": {
+    "message": "Notes and ignored emails are stored only on this computer. Export a backup to keep them when reinstalling."
+  },
+  "optExportBackup": {
+    "message": "Export backup (JSON)"
+  },
+  "optImportBackup": {
+    "message": "Import backup…"
+  },
+  "optImportReplace": {
+    "message": "Replace existing data instead of merging"
+  },
+  "optClearCache": {
+    "message": "Clear scan cache"
+  },
+  "optCreateReplyTag": {
+    "message": "Create the reply tag"
+  }
+}

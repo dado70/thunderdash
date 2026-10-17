@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<!-- SPDX-License-Identifier: AGPL-3.0-or-later
+     Copyright (C) 2026 Alessandro (dado) Scapuzzi <dado70@gmail.com> -->
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title data-i18n="optionsTitle">Options</title>
+  <link rel="icon" href="../icons/icon.svg">
+  <link rel="stylesheet" href="../src/ui.css">
+  <script type="module" src="options.mjs"></script>
+</head>
+<body>
+  <main class="page">
+    <header class="app-header">
+      <img class="logo" src="../icons/icon.svg" alt="">
+      <div class="titles">
+        <h1 data-i18n="optionsTitle"></h1>
+        <div class="subtitle" data-i18n="extensionName"></div>
+      </div>
+    </header>
+
+    <form id="settingsForm">
+      <section class="card" aria-labelledby="secGeneral">
+        <h2 id="secGeneral" data-i18n="secGeneral"></h2>
+        <div class="settings-grid">
+          <label class="field"><span data-i18n="optWarningDays"></span>
+            <input type="number" id="warningDays" min="0" max="365" required>
+          </label>
+          <label class="field"><span data-i18n="optCriticalDays"></span>
+            <input type="number" id="criticalDays" min="1" max="366" required>
+          </label>
+          <label class="field"><span data-i18n="optDefaultRange"></span>
+            <input type="number" id="defaultRangeDays" min="1" max="3650" required>
+          </label>
+        </div>
+        <p>
+          <label class="inline"><input type="checkbox" id="subjectFallback"> <span data-i18n="optSubjectFallback"></span></label><br>
+          <span class="small muted" data-i18n="optSubjectFallbackHint"></span>
+        </p>
+        <p>
+          <label class="inline"><input type="checkbox" id="hideTransactional"> <span data-i18n="optHideTransactional"></span></label>
+        </p>
+      </section>
+
+      <section class="card" aria-labelledby="secKeywords">
+        <h2 id="secKeywords" data-i18n="secKeywords"></h2>
+        <p class="small muted" data-i18n="optKeywordsHint"></p>
+        <div class="settings-grid">
+          <label class="field"><span data-i18n="optTransactionalKeywords"></span>
+            <textarea id="transactionalKeywords" rows="8"></textarea>
+          </label>
+          <label class="field"><span data-i18n="optCustomExclusions"></span>
+            <textarea id="customExclusions" rows="8" data-i18n-placeholder="optCustomExclusionsPlaceholder"></textarea>
+          </label>
+        </div>
+        <p><button type="button" id="resetKeywords" data-i18n="optResetKeywords"></button></p>
+      </section>
+
+      <section class="card" aria-labelledby="secFolders">
+        <h2 id="secFolders" data-i18n="secFolders"></h2>
+        <p class="small muted" data-i18n="optFoldersHint"></p>
+        <div class="table-wrap">
+          <table class="folder-table">
+            <thead>
+              <tr>
+                <th data-i18n="colFolder"></th>
+                <th data-i18n="optReceived"></th>
+                <th data-i18n="optSent"></th>
+              </tr>
+            </thead>
+            <tbody id="folderRows"></tbody>
+          </table>
+        </div>
+        <p><button type="button" id="resetFolders" data-i18n="optResetFolders"></button></p>
+      </section>
+
+      <div class="row">
+        <span class="spacer"></span>
+        <button type="submit" class="primary" data-i18n="save"></button>
+      </div>
+    </form>
+
+    <section class="card mt" aria-labelledby="secData">
+      <h2 id="secData" data-i18n="secData"></h2>
+      <p class="small muted" data-i18n="optDataHint"></p>
+      <div class="row">
+        <button type="button" id="exportBackup" data-i18n="optExportBackup"></button>
+        <label class="button" for="importFile"><span data-i18n="optImportBackup"></span></label>
+        <input type="file" id="importFile" accept="application/json,.json" class="visually-hidden">
+        <label class="inline"><input type="checkbox" id="importReplace"> <span data-i18n="optImportReplace"></span></label>
+      </div>
+      <div class="row mt">
+        <button type="button" id="clearCache" data-i18n="optClearCache"></button>
+        <button type="button" id="createReplyTag" data-i18n="optCreateReplyTag"></button>
+      </div>
+    </section>
+  </main>
+  <div id="toast" class="hidden" role="status" aria-live="polite"></div>
+</body>
+</html>

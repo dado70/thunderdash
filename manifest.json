@@ -1,0 +1,48 @@
+{
+  "manifest_version": 3,
+  "name": "__MSG_extensionName__",
+  "description": "__MSG_extensionDescription__",
+  "version": "0.1.0",
+  "author": "Alessandro (dado) Scapuzzi <dado70@gmail.com>",
+  "homepage_url": "https://github.com/dado70/thunderdash",
+  "default_locale": "en",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "thunderdash@dado70.github.io",
+      "strict_min_version": "128.0",
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ]
+      }
+    }
+  },
+  "icons": {
+    "32": "icons/icon.svg",
+    "64": "icons/icon.svg"
+  },
+  "action": {
+    "default_title": "__MSG_actionTitle__",
+    "default_icon": "icons/icon.svg"
+  },
+  "background": {
+    "scripts": [
+      "background.mjs"
+    ],
+    "type": "module"
+  },
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+  "permissions": [
+    "accountsRead",
+    "messagesRead",
+    "messagesUpdate",
+    "messagesTags",
+    "messagesTagsList",
+    "compose",
+    "storage",
+    "downloads"
+  ]
+}

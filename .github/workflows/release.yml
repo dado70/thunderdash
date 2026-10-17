@@ -1,0 +1,45 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Builds the .xpi and attaches it to a GitHub Release when a tag vX.Y.Z is pushed.
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Check tag matches manifest version
+        run: |
+          version=$(node -p "require('./manifest.json').version")
+          if [ "v${version}" != "${GITHUB_REF_NAME}" ]; then
+            echo "Tag ${GITHUB_REF_NAME} does not match manifest version ${version}" >&2
+            exit 1
+          fi
+
+      - name: Unit tests
+        run: node --test tests/
+
+      - name: Lint (web-ext)
+        # Thunderbird-only permissions are reported as warnings by the Firefox
+        # schema used by web-ext; errors fail the build.
+        run: npx --yes web-ext@10.7.0 lint --source-dir . --ignore-files "tests/**" "scripts/**" ".github/**" "dist/**"
+
+      - name: Build .xpi
+        run: bash scripts/build.sh
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${GITHUB_REF_NAME}" dist/*.xpi --title "${GITHUB_REF_NAME}" --generate-notes

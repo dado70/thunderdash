@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<!-- SPDX-License-Identifier: AGPL-3.0-or-later
+     Copyright (C) 2026 Alessandro (dado) Scapuzzi <dado70@gmail.com> -->
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title data-i18n="extensionName">Unanswered Emails Dashboard Pro</title>
+  <link rel="icon" href="../icons/icon.svg">
+  <link rel="stylesheet" href="../src/ui.css">
+  <script type="module" src="dashboard.mjs"></script>
+</head>
+<body>
+  <main class="page">
+    <header class="app-header">
+      <img class="logo" src="../icons/icon.svg" alt="">
+      <div class="titles">
+        <h1 data-i18n="extensionName">Unanswered Emails Dashboard Pro</h1>
+        <div class="subtitle" id="lastScan" aria-live="polite"></div>
+      </div>
+      <div class="actions">
+        <button type="button" id="exportBtn" data-icon="download" data-i18n-title="exportCsvHint"><span data-i18n="exportCsv"></span></button>
+        <button type="button" id="optionsBtn" data-icon="settings"><span data-i18n="options"></span></button>
+      </div>
+    </header>
+
+    <section class="card" aria-labelledby="scanTitle">
+      <h2 id="scanTitle" data-i18n="scanTitle"></h2>
+      <form id="scanForm" class="row">
+        <label class="field"><span data-i18n="fromDate"></span>
+          <input type="date" id="startDate" required>
+        </label>
+        <label class="field"><span data-i18n="toDate"></span>
+          <input type="date" id="endDate" required>
+        </label>
+        <div class="segmented" role="group" data-i18n-aria-label="quickRange">
+          <button type="button" data-range="7" data-i18n="range7"></button>
+          <button type="button" data-range="30" data-i18n="range30"></button>
+          <button type="button" data-range="90" data-i18n="range90"></button>
+          <button type="button" data-range="365" data-i18n="range365"></button>
+        </div>
+        <span class="spacer"></span>
+        <button type="submit" class="primary" id="scanBtn" data-icon="refresh"><span data-i18n="scan"></span></button>
+        <button type="button" id="cancelBtn" class="hidden" data-icon="player-stop"><span data-i18n="cancel"></span></button>
+      </form>
+      <div class="progress hidden" id="progress" role="status" aria-live="polite">
+        <progress id="progressBar"></progress>
+        <span id="progressText" class="small muted"></span>
+      </div>
+    </section>
+
+    <section class="stats" aria-label="summary" data-i18n-aria-label="summary">
+      <button type="button" class="stat" data-filter-severity="" aria-pressed="false">
+        <span class="value" id="statPending">–</span><span class="label" data-i18n="statPending"></span>
+      </button>
+      <button type="button" class="stat critical" data-filter-severity="critical" aria-pressed="false">
+        <span class="value" id="statCritical">–</span><span class="label" id="statCriticalLabel"></span>
+      </button>
+      <button type="button" class="stat warning" data-filter-severity="warning" aria-pressed="false">
+        <span class="value" id="statWarning">–</span><span class="label" id="statWarningLabel"></span>
+      </button>
+      <div class="stat">
+        <span class="value" id="statTransactional">–</span><span class="label" data-i18n="statTransactional"></span>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="resultsTitle">
+      <h2 id="resultsTitle" class="visually-hidden" data-i18n="results"></h2>
+      <div class="row filters">
+        <div class="segmented" role="group" data-i18n-aria-label="view">
+          <button type="button" data-view="pending" aria-pressed="true" data-i18n="viewPending"></button>
+          <button type="button" data-view="ignored" aria-pressed="false" data-i18n="viewIgnored"></button>
+        </div>
+        <label class="field"><span data-i18n="search"></span>
+          <input type="search" id="filterText" data-i18n-placeholder="searchPlaceholder">
+        </label>
+        <label class="field"><span data-i18n="account"></span>
+          <select id="filterAccount"><option value="" data-i18n="all"></option></select>
+        </label>
+        <label class="field"><span data-i18n="type"></span>
+          <select id="filterType">
+            <option value="" data-i18n="all"></option>
+            <option value="action" data-i18n="typeAction"></option>
+            <option value="transactional" data-i18n="typeTransactional"></option>
+          </select>
+        </label>
+        <label class="field"><span data-i18n="tag"></span>
+          <select id="filterTag"><option value="" data-i18n="all"></option></select>
+        </label>
+        <label class="inline"><input type="checkbox" id="hideTransactional"> <span data-i18n="hideTransactional"></span></label>
+        <span class="spacer"></span>
+        <span class="small muted" id="countLabel" aria-live="polite"></span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-sort="age"><button type="button" class="sort" data-i18n="colAge"></button></th>
+              <th data-sort="author"><button type="button" class="sort" data-i18n="colFrom"></button></th>
+              <th data-sort="subject"><button type="button" class="sort" data-i18n="colSubject"></button></th>
+              <th data-sort="date"><button type="button" class="sort" data-i18n="colReceived"></button></th>
+              <th data-sort="folder"><button type="button" class="sort" data-i18n="colFolder"></button></th>
+              <th data-i18n="colTags"></th>
+              <th data-sort="type"><button type="button" class="sort" data-i18n="colType"></button></th>
+              <th><span data-i18n="colActions"></span></th>
+            </tr>
+          </thead>
+          <tbody id="results"></tbody>
+        </table>
+      </div>
+      <p class="empty" id="emptyState"></p>
+    </section>
+  </main>
+
+  <dialog id="tagDialog" aria-labelledby="tagDialogTitle">
+    <form method="dialog">
+      <h2 id="tagDialogTitle" data-i18n="tagsTitle"></h2>
+      <p class="small muted" id="tagDialogSubject"></p>
+      <div class="tag-list" id="tagList"></div>
+      <div class="buttons">
+        <button value="cancel" data-i18n="cancel"></button>
+        <button value="save" class="primary" data-i18n="save"></button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="noteDialog" aria-labelledby="noteDialogTitle">
+    <form method="dialog">
+      <h2 id="noteDialogTitle" data-i18n="noteTitle"></h2>
+      <p class="small muted" id="noteDialogSubject"></p>
+      <label class="visually-hidden" for="noteText" data-i18n="noteTitle"></label>
+      <textarea id="noteText" rows="6" maxlength="5000"></textarea>
+      <div class="buttons">
+        <button value="delete" class="danger" data-i18n="deleteNote"></button>
+        <span class="spacer"></span>
+        <button value="cancel" data-i18n="cancel"></button>
+        <button value="save" class="primary" data-i18n="save"></button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="hidden" role="status" aria-live="polite"></div>
+</body>
+</html>

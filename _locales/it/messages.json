@@ -1,0 +1,368 @@
+{
+  "extensionName": {
+    "message": "Unanswered Emails Dashboard Pro"
+  },
+  "extensionDescription": {
+    "message": "Dashboard delle email ricevute a cui non hai ancora risposto, con anzianità, tag e note personali."
+  },
+  "actionTitle": {
+    "message": "Email senza risposta"
+  },
+  "replyTagName": {
+    "message": "Rispondere"
+  },
+  "exportCsv": {
+    "message": "Esporta CSV"
+  },
+  "exportCsvHint": {
+    "message": "Esporta le righe attualmente visualizzate"
+  },
+  "options": {
+    "message": "Opzioni"
+  },
+  "optionsTitle": {
+    "message": "Opzioni"
+  },
+  "scanTitle": {
+    "message": "Scansione"
+  },
+  "fromDate": {
+    "message": "Dal"
+  },
+  "toDate": {
+    "message": "Al"
+  },
+  "quickRange": {
+    "message": "Intervallo rapido"
+  },
+  "range7": {
+    "message": "7 giorni"
+  },
+  "range30": {
+    "message": "30 giorni"
+  },
+  "range90": {
+    "message": "90 giorni"
+  },
+  "range365": {
+    "message": "1 anno"
+  },
+  "scan": {
+    "message": "Analizza"
+  },
+  "cancel": {
+    "message": "Annulla"
+  },
+  "save": {
+    "message": "Salva"
+  },
+  "summary": {
+    "message": "Riepilogo"
+  },
+  "statPending": {
+    "message": "In attesa di risposta"
+  },
+  "statCritical": {
+    "message": "In attesa da $1+ giorni"
+  },
+  "statWarning": {
+    "message": "In attesa da $1+ giorni"
+  },
+  "statTransactional": {
+    "message": "Transazionali / dubbie"
+  },
+  "results": {
+    "message": "Risultati"
+  },
+  "view": {
+    "message": "Vista"
+  },
+  "viewPending": {
+    "message": "Da gestire"
+  },
+  "viewIgnored": {
+    "message": "Ignorate"
+  },
+  "search": {
+    "message": "Cerca"
+  },
+  "searchPlaceholder": {
+    "message": "Mittente, oggetto o nota"
+  },
+  "account": {
+    "message": "Account"
+  },
+  "type": {
+    "message": "Tipo"
+  },
+  "tag": {
+    "message": "Tag"
+  },
+  "all": {
+    "message": "Tutti"
+  },
+  "typeAction": {
+    "message": "Richiede risposta"
+  },
+  "typeTransactional": {
+    "message": "Transazionale / dubbia"
+  },
+  "hideTransactional": {
+    "message": "Nascondi transazionali"
+  },
+  "colAge": {
+    "message": "Attesa"
+  },
+  "colFrom": {
+    "message": "Mittente"
+  },
+  "colSubject": {
+    "message": "Oggetto"
+  },
+  "colReceived": {
+    "message": "Ricevuta"
+  },
+  "colFolder": {
+    "message": "Cartella"
+  },
+  "colTags": {
+    "message": "Tag"
+  },
+  "colType": {
+    "message": "Tipo"
+  },
+  "colActions": {
+    "message": "Azioni"
+  },
+  "countShown": {
+    "message": "$1 visualizzate"
+  },
+  "dayOne": {
+    "message": "1 giorno"
+  },
+  "dayMany": {
+    "message": "$1 giorni"
+  },
+  "noSubject": {
+    "message": "(senza oggetto)"
+  },
+  "actionOpen": {
+    "message": "Apri messaggio"
+  },
+  "actionReply": {
+    "message": "Rispondi"
+  },
+  "actionTags": {
+    "message": "Tag"
+  },
+  "actionNote": {
+    "message": "Nota personale"
+  },
+  "actionIgnore": {
+    "message": "Ignora (non serve risposta)"
+  },
+  "actionRestore": {
+    "message": "Ripristina"
+  },
+  "outOfRange": {
+    "message": "Fuori dall'intervallo analizzato"
+  },
+  "lastScanInfo": {
+    "message": "Ultima scansione: $1 · analizzati $2 messaggi ricevuti e $3 inviati"
+  },
+  "neverScanned": {
+    "message": "Nessuna scansione eseguita"
+  },
+  "headerErrors": {
+    "message": "intestazioni di $1 messaggi inviati non leggibili"
+  },
+  "emptyNoScan": {
+    "message": "Scegli un periodo e premi Analizza."
+  },
+  "emptyAllDone": {
+    "message": "Nessuna email senza risposta in questa vista."
+  },
+  "emptyIgnored": {
+    "message": "Nessuna email ignorata."
+  },
+  "progressSent": {
+    "message": "Lettura messaggi inviati: $1"
+  },
+  "progressHeaders": {
+    "message": "Lettura intestazioni di risposta: $1 / $2"
+  },
+  "progressInbox": {
+    "message": "Analisi messaggi ricevuti: $1"
+  },
+  "tagsTitle": {
+    "message": "Tag"
+  },
+  "noTags": {
+    "message": "Nessun tag definito in Thunderbird."
+  },
+  "noteTitle": {
+    "message": "Nota personale"
+  },
+  "deleteNote": {
+    "message": "Elimina nota"
+  },
+  "toastIgnored": {
+    "message": "Email ignorata. Puoi ripristinarla dalla vista Ignorate."
+  },
+  "toastRestored": {
+    "message": "Email ripristinata."
+  },
+  "toastTagsSaved": {
+    "message": "Tag aggiornati."
+  },
+  "toastNoteSaved": {
+    "message": "Nota salvata."
+  },
+  "toastNoteDeleted": {
+    "message": "Nota eliminata."
+  },
+  "toastScanDone": {
+    "message": "Scansione completata: $1 email in attesa di risposta."
+  },
+  "toastScanCancelled": {
+    "message": "Scansione annullata."
+  },
+  "toastSettingsSaved": {
+    "message": "Impostazioni salvate."
+  },
+  "toastImported": {
+    "message": "Backup importato: $1 note, $2 email ignorate."
+  },
+  "toastCacheCleared": {
+    "message": "Cache svuotata."
+  },
+  "toastReplyTag": {
+    "message": "Il tag \"$1\" è disponibile."
+  },
+  "errGeneric": {
+    "message": "Errore: $1"
+  },
+  "errNoReceiveFolders": {
+    "message": "Nessuna cartella selezionata per la posta ricevuta. Controlla le Opzioni."
+  },
+  "errMessageNotFound": {
+    "message": "Il messaggio non esiste più (spostato o eliminato). Esegui una nuova scansione."
+  },
+  "errInvalidBackup": {
+    "message": "Il file non è un backup valido di questa estensione."
+  },
+  "errDateOrder": {
+    "message": "La data di inizio deve precedere la data di fine."
+  },
+  "errThresholds": {
+    "message": "La soglia critica deve essere maggiore della soglia di attenzione."
+  },
+  "csvDays": {
+    "message": "Giorni di attesa"
+  },
+  "csvName": {
+    "message": "Mittente"
+  },
+  "csvEmail": {
+    "message": "Email"
+  },
+  "csvSubject": {
+    "message": "Oggetto"
+  },
+  "csvDate": {
+    "message": "Ricevuta"
+  },
+  "csvAccount": {
+    "message": "Account"
+  },
+  "csvFolder": {
+    "message": "Cartella"
+  },
+  "csvTags": {
+    "message": "Tag"
+  },
+  "csvType": {
+    "message": "Tipo"
+  },
+  "csvNote": {
+    "message": "Nota"
+  },
+  "secGeneral": {
+    "message": "Generale"
+  },
+  "optWarningDays": {
+    "message": "Attenzione dopo (giorni)"
+  },
+  "optCriticalDays": {
+    "message": "Critica dopo (giorni)"
+  },
+  "optDefaultRange": {
+    "message": "Periodo predefinito (giorni)"
+  },
+  "optSubjectFallback": {
+    "message": "Riconosci le risposte anche dall'oggetto"
+  },
+  "optSubjectFallbackHint": {
+    "message": "Usato quando un messaggio inviato non ha le intestazioni In-Reply-To/References: un messaggio inviato successivo con lo stesso oggetto e indirizzato al mittente vale come risposta."
+  },
+  "optHideTransactional": {
+    "message": "Nascondi le email transazionali per impostazione predefinita"
+  },
+  "secKeywords": {
+    "message": "Email transazionali"
+  },
+  "optKeywordsHint": {
+    "message": "Una email è considerata transazionale se mittente o oggetto contengono una di queste parole (una per riga, o separate da virgola)."
+  },
+  "optTransactionalKeywords": {
+    "message": "Parole chiave"
+  },
+  "optCustomExclusions": {
+    "message": "Tue parole o indirizzi aggiuntivi"
+  },
+  "optCustomExclusionsPlaceholder": {
+    "message": "es. amazon.it\nshop@esempio.it"
+  },
+  "optResetKeywords": {
+    "message": "Ripristina parole predefinite"
+  },
+  "secFolders": {
+    "message": "Cartelle"
+  },
+  "optFoldersHint": {
+    "message": "Ricevute: cartelle in cui cercare le email in attesa di risposta. Inviate: cartelle in cui cercare le tue risposte. Spam, Cestino, Bozze, Modelli e Posta in uscita sono sempre esclusi."
+  },
+  "optReceived": {
+    "message": "Ricevute"
+  },
+  "optSent": {
+    "message": "Inviate"
+  },
+  "optExcluded": {
+    "message": "esclusa"
+  },
+  "optResetFolders": {
+    "message": "Ripristina selezione predefinita"
+  },
+  "secData": {
+    "message": "Dati e backup"
+  },
+  "optDataHint": {
+    "message": "Note ed email ignorate sono salvate solo su questo computer. Esporta un backup per conservarle in caso di reinstallazione."
+  },
+  "optExportBackup": {
+    "message": "Esporta backup (JSON)"
+  },
+  "optImportBackup": {
+    "message": "Importa backup…"
+  },
+  "optImportReplace": {
+    "message": "Sostituisci i dati esistenti invece di unirli"
+  },
+  "optClearCache": {
+    "message": "Svuota cache scansioni"
+  },
+  "optCreateReplyTag": {
+    "message": "Crea il tag Rispondere"
+  }
+}

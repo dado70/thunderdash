@@ -1,0 +1,10 @@
+# Build output
+dist/
+*.xpi
+*.zip
+
+# Tooling / OS
+node_modules/
+.DS_Store
+Thumbs.db
+*.swp
