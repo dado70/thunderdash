@@ -37,7 +37,7 @@ Estensione per **Thunderbird 128 e successivi** che mostra in una dashboard le e
 
 Nelle **Opzioni → Riepilogo programmato** puoi creare una o più pianificazioni. Per ciascuna scegli:
 
-- **destinatari** (uno o più indirizzi) e **identità** di Thunderbird da cui inviare;
+- **destinatari**: uno o più indirizzi **separati da virgola** (es. `io@esempio.it, collega@esempio.it`), e **identità** di Thunderbird da cui inviare. Se un destinatario deve ricevere il riepilogo con una frequenza o impostazioni diverse, **aggiungi un'altra pianificazione**;
 - **frequenza**: giornaliera, settimanale (giorno della settimana) o mensile (giorno del mese; nei mesi più corti viene usato l'ultimo giorno), e **ora**;
 - se inviare **anche quando non ci sono email in attesa** e se **escludere le email transazionali**.
 
