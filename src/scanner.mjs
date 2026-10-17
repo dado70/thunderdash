@@ -72,8 +72,9 @@ const recipientsOf = m =>
  * @param {object} opts.settings  merged settings (see core.mergeSettings)
  * @param {(p: {phase: string, done: number, total?: number}) => void} [opts.onProgress]
  * @param {AbortSignal} [opts.signal]
+ * @param {boolean} [opts.persist]  save the result as the dashboard's last scan
  */
-export async function scan({ startDate, endDate, settings, onProgress = () => {}, signal }) {
+export async function scan({ startDate, endDate, settings, onProgress = () => {}, signal, persist = true }) {
   const accounts = await listAccountFolders();
   const sel = resolveSelection(accounts, settings);
   if (!sel.receive.length) throw new Error('no-receive-folders');
@@ -186,6 +187,6 @@ export async function scan({ startDate, endDate, settings, onProgress = () => {}
       headerErrors
     }
   };
-  await saveLastScan(result);
+  if (persist) await saveLastScan(result);
   return result;
 }

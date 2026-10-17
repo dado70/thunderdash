@@ -19,3 +19,10 @@ jobs:
           node-version: '20'
       - run: node --test tests/
       - run: npx --yes web-ext@10.7.0 lint --source-dir . --ignore-files "tests/**" "scripts/**" ".github/**" "dist/**"
+      # Test build, downloadable from the workflow run page (e.g. to try a PR).
+      - run: bash scripts/build.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: thunderdash-xpi
+          path: dist/*.xpi
+          retention-days: 14

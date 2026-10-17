@@ -2,6 +2,8 @@
 // Copyright (C) 2026 Alessandro (dado) Scapuzzi <dado70@gmail.com>
 
 import { ensureReplyTag } from './src/actions.mjs';
+import { ALARM_PREFIX, reconcileSchedules, runSchedule } from './src/scheduler.mjs';
+import { KEYS } from './src/store.mjs';
 
 const DASHBOARD_URL = messenger.runtime.getURL('dashboard/dashboard.html');
 
@@ -37,3 +39,30 @@ messenger.runtime.onInstalled.addListener(({ reason }) => {
     ensureReplyTag().catch(e => console.error('thunderdash: cannot create reply tag', e));
   }
 });
+
+// ------------------------------------------------------------ scheduled reports
+
+const reconcile = () =>
+  reconcileSchedules().catch(e => console.error('thunderdash: cannot reconcile schedules', e));
+
+messenger.alarms.onAlarm.addListener(alarm => {
+  if (alarm.name.startsWith(ALARM_PREFIX)) reconcile();
+});
+
+// Schedules edited in the options page.
+messenger.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName === 'local' && changes[KEYS.settings]) reconcile();
+});
+
+// "Send now" from the options page. The report runs here, so it completes
+// even if the options tab is closed meanwhile.
+messenger.runtime.onMessage.addListener(message => {
+  if (message?.type !== 'thunderdash:sendReportNow') return undefined;
+  return runSchedule(message.id, { manual: true })
+    .then(res => ({ ok: true, ...res }))
+    .catch(e => ({ ok: false, error: e?.message || String(e) }));
+});
+
+// Runs every time the background page starts (Thunderbird start-up or wake-up):
+// catches up on reports missed while Thunderbird was closed.
+reconcile();

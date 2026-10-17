@@ -64,6 +64,31 @@
       </div>
     </section>
 
+    <section class="card correspondents" aria-labelledby="corrTitle">
+      <div class="row filters">
+        <h2 id="corrTitle" data-i18n="corrTitle"></h2>
+        <span class="spacer"></span>
+        <label class="field"><span data-i18n="corrSearch"></span>
+          <input type="search" id="corrSearch" data-i18n-placeholder="corrSearchPlaceholder">
+        </label>
+      </div>
+      <div class="list table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-i18n="colFrom"></th>
+              <th class="num" data-i18n="corrPending"></th>
+              <th class="num" data-i18n="corrCritical"></th>
+              <th class="num" data-i18n="corrOldest"></th>
+            </tr>
+          </thead>
+          <tbody id="corrRows"></tbody>
+        </table>
+      </div>
+      <p class="empty small hidden" id="corrEmpty"></p>
+      <p class="small"><button type="button" id="corrToggle" class="hidden"></button></p>
+    </section>
+
     <section class="card" aria-labelledby="resultsTitle">
       <h2 id="resultsTitle" class="visually-hidden" data-i18n="results"></h2>
       <div class="row filters">
@@ -88,6 +113,7 @@
           <select id="filterTag"><option value="" data-i18n="all"></option></select>
         </label>
         <label class="inline"><input type="checkbox" id="hideTransactional"> <span data-i18n="hideTransactional"></span></label>
+        <span id="senderChip" class="chip-filter hidden"></span>
         <span class="spacer"></span>
         <span class="small muted" id="countLabel" aria-live="polite"></span>
       </div>

@@ -19,7 +19,9 @@ Estensione per **Thunderbird 128 e successivi** che mostra in una dashboard le e
   - periodo personalizzabile e scorciatoie 7 / 30 / 90 giorni / 1 anno;
   - riepilogo: in attesa, critiche, in attenzione, transazionali (cliccabili come filtro);
   - ricerca su mittente, oggetto e note; filtri per account, tipo e tag; ordinamento per colonna;
-  - badge colorati per i giorni di attesa, con soglie configurabili (predefinite 2 e 5 giorni).
+  - badge colorati per i giorni di attesa, con soglie configurabili (predefinite 2 e 5 giorni);
+  - pannello **Corrispondenti a cui rispondere**: ogni mittente con il numero di email in attesa, quante sono critiche e da quanto aspetta la più vecchia, con ricerca; un clic sul nome filtra l'elenco su quel mittente.
+- **Riepilogo programmato via email** (HTML): giornaliero, settimanale o mensile, a te e/o ad altri destinatari (es. un collega), ognuno con la propria pianificazione. Vedi [Riepilogo programmato](#riepilogo-programmato).
 - **Azioni su ogni email**
   - **Apri** il messaggio in Thunderbird o **Rispondi** direttamente;
   - **Tag** di Thunderbird (Importante, Lavoro, Da fare… e i tuoi tag): le modifiche sono quelle reali, visibili ovunque in Thunderbird. Al primo avvio viene creato il tag **"Rispondere"**, se non esiste già;
@@ -30,6 +32,37 @@ Estensione per **Thunderbird 128 e successivi** che mostra in una dashboard le e
 - **Cache**: le intestazioni delle email inviate già lette vengono memorizzate, quindi le scansioni successive sono molto più veloci anche su caselle grandi. L'ultimo risultato viene mostrato subito all'apertura.
 - **Backup** in JSON di impostazioni, note ed email ignorate, con importazione (unione o sostituzione).
 - Interfaccia in **italiano e inglese** (segue la lingua di Thunderbird), tema chiaro e scuro automatico.
+
+## Riepilogo programmato
+
+Nelle **Opzioni → Riepilogo programmato** puoi creare una o più pianificazioni. Per ciascuna scegli:
+
+- **destinatari** (uno o più indirizzi) e **identità** di Thunderbird da cui inviare;
+- **frequenza**: giornaliera, settimanale (giorno della settimana) o mensile (giorno del mese; nei mesi più corti viene usato l'ultimo giorno), e **ora**;
+- se inviare **anche quando non ci sono email in attesa** e se **escludere le email transazionali**.
+
+Il riepilogo contiene i contatori (in attesa, critiche, in attenzione) e l'elenco delle **email critiche raggruppate per account**, con tag e note personali. Analizza gli **ultimi N giorni** (impostabile, predefinito 30) usando account e cartelle selezionati nelle Opzioni; le email ignorate non compaiono. Il pulsante **Salva e invia ora** permette di provarlo subito.
+
+L'invio usa il tuo account di Thunderbird (server SMTP e copia negli Inviati come da impostazioni dell'identità). Su Thunderbird **153 e successivi** avviene in background; sulle versioni **128–152** si apre per un istante una finestra di composizione che si invia da sola. Se sei offline, il messaggio resta nella Posta in uscita e parte appena torni online. Ogni riepilogo ha l'intestazione `X-Thunderdash-Report: 1`, utile per creare un filtro.
+
+### Thunderbird deve essere aperto
+
+Un'estensione funziona solo mentre Thunderbird è in esecuzione. Per questo:
+
+- se all'ora prevista Thunderbird era chiuso, il riepilogo viene **inviato una sola volta al successivo avvio** (recupero automatico);
+- per ricevere i riepiloghi in orario conviene **avviare Thunderbird automaticamente all'accesso**:
+  - **Linux** (GNOME, KDE, XFCE…): aggiungi Thunderbird alle *Applicazioni d'avvio* della tua sessione, oppure crea il file `~/.config/autostart/thunderbird.desktop` con:
+    ```ini
+    [Desktop Entry]
+    Type=Application
+    Name=Thunderbird
+    Exec=thunderbird
+    X-GNOME-Autostart-enabled=true
+    ```
+  - **Windows**: premi `Win + R`, digita `shell:startup` e incolla nella cartella un collegamento a Thunderbird;
+  - **macOS**: *Impostazioni di Sistema → Generali → Elementi login* → aggiungi Thunderbird.
+
+Un servizio esterno, indipendente da Thunderbird, è previsto nella [roadmap](#roadmap).
 
 ## Requisiti
 
@@ -70,10 +103,12 @@ Installa il nuovo `.xpi` con la stessa procedura: impostazioni, note ed email ig
 | Comporre messaggi (`compose`) | aprire la finestra di risposta |
 | Archiviazione (`storage`) | salvare impostazioni, note, email ignorate e cache |
 | Download (`downloads`) | salvare l'esportazione CSV e il backup |
+| Allarmi (`alarms`) | programmare l'invio dei riepiloghi |
+| Inviare messaggi (`compose.send`, `messages.send`) | inviare il riepilogo programmato dal tuo account (`messages.send` esiste da Thunderbird 153 ed è ignorato dalle versioni precedenti) |
 
 ## Privacy
 
-L'estensione **non invia alcun dato all'esterno** e non usa servizi di terze parti. Tutto viene elaborato e salvato localmente nel profilo di Thunderbird. Per riconoscere le risposte vengono usate solo le intestazioni delle email; il testo delle email non viene analizzato né salvato. (Su Thunderbird precedenti alla 153 l'API `getFull()` restituisce anche il corpo, che viene ignorato.)
+L'estensione **non invia dati allo sviluppatore né a servizi di terze parti**. Tutto viene elaborato e salvato localmente nel profilo di Thunderbird. L'unico invio è il **riepilogo programmato**, solo se lo configuri tu: parte dal tuo account di posta verso i destinatari che hai indicato, e contiene mittenti, oggetti, tag e note delle email critiche (tienine conto se lo invii a un collega). Per riconoscere le risposte vengono usate solo le intestazioni delle email; il testo delle email non viene analizzato né salvato. (Su Thunderbird precedenti alla 153 l'API `getFull()` restituisce anche il corpo, che viene ignorato.)
 
 Note ed email ignorate restano su questo computer. Se reinstalli l'estensione o cambi PC, esporta prima un **backup** dalle Opzioni.
 
@@ -82,6 +117,13 @@ Note ed email ignorate restano su questo computer. Se reinstalli l'estensione o 
 - Una risposta viene riconosciuta solo se l'email inviata si trova in una delle cartelle "Inviate" selezionate. Se archivi le email inviate, aggiungi la cartella di archivio come cartella "Inviate" nelle Opzioni.
 - Con account IMAP non sincronizzati offline, la lettura delle intestazioni delle email inviate richiede il server. Se non è raggiungibile, quelle email vengono valutate solo tramite l'oggetto e la dashboard ne indica il numero.
 - Il riconoscimento delle email transazionali è basato su parole chiave e va considerato indicativo.
+
+## Roadmap
+
+- Canali di notifica aggiuntivi per il riepilogo: **Telegram** (bot) e **ntfy** (notifiche push open source, anche su server proprio).
+- **Servizio compagno** indipendente da Thunderbird (avviato da un timer di sistema sul PC Linux): legge la posta via IMAP e invia il riepilogo via SMTP anche quando Thunderbird è chiuso.
+
+Le modifiche di ogni versione sono descritte nel [CHANGELOG](CHANGELOG.md).
 
 ## Compilare dal sorgente
 
@@ -114,6 +156,8 @@ Questo programma è software libero, distribuito secondo i termini della **GNU A
 - All accounts; Inbox and subfolders plus every Sent folder by default, fully configurable; Junk, Trash, Drafts, Templates and Outbox are always excluded.
 - Dashboard tab with date range, waiting-time badges (configurable thresholds), search, filters, sorting and CSV export.
 - Per-message actions: open, reply, Thunderbird tags (a "To reply" tag is created on first install), personal notes, ignore/restore.
+- "Correspondents to reply to" panel with search; click a sender to filter.
+- Scheduled HTML summary e-mails (daily / weekly / monthly, several schedules and recipients), sent from your Thunderbird account; a summary missed while Thunderbird was closed is sent once at the next start-up.
 - Header cache for fast rescans, JSON backup/restore, Italian and English UI, light/dark theme.
 - No data ever leaves your computer.
 

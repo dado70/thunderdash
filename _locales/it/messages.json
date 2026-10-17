@@ -364,5 +364,173 @@
   },
   "optCreateReplyTag": {
     "message": "Crea il tag Rispondere"
+  },
+  "corrTitle": {
+    "message": "Corrispondenti a cui rispondere"
+  },
+  "corrSearch": {
+    "message": "Cerca corrispondente"
+  },
+  "corrSearchPlaceholder": {
+    "message": "Nome o indirizzo"
+  },
+  "corrPending": {
+    "message": "In attesa"
+  },
+  "corrCritical": {
+    "message": "Critiche"
+  },
+  "corrOldest": {
+    "message": "Più vecchia"
+  },
+  "corrFilterHint": {
+    "message": "Mostra solo le email di questo corrispondente"
+  },
+  "corrNone": {
+    "message": "Nessun corrispondente in attesa di risposta."
+  },
+  "corrNoMatch": {
+    "message": "Nessun corrispondente corrisponde alla ricerca."
+  },
+  "corrShowAll": {
+    "message": "Mostra tutti ($1)"
+  },
+  "corrShowLess": {
+    "message": "Mostra meno"
+  },
+  "corrActiveFilter": {
+    "message": "Mittente: $1"
+  },
+  "corrClearFilter": {
+    "message": "Rimuovi filtro mittente"
+  },
+  "secReports": {
+    "message": "Riepilogo programmato"
+  },
+  "optReportsHint": {
+    "message": "Invia un riepilogo HTML (contatori ed email critiche, raggruppate per account, con tag e note) usando gli account e le cartelle selezionati sopra. Thunderbird deve essere aperto: un riepilogo saltato mentre era chiuso viene inviato una sola volta al successivo avvio."
+  },
+  "optSendSilent": {
+    "message": "La tua versione di Thunderbird invia il riepilogo in background."
+  },
+  "optSendCompose": {
+    "message": "Sulle versioni di Thunderbird precedenti alla 153 per l'invio si apre per un istante una finestra di composizione."
+  },
+  "optReportRange": {
+    "message": "Periodo del riepilogo: ultimi N giorni"
+  },
+  "optAddSchedule": {
+    "message": "Aggiungi pianificazione"
+  },
+  "scheduleEnabled": {
+    "message": "Attiva"
+  },
+  "scheduleLabel": {
+    "message": "Nome"
+  },
+  "scheduleLabelPlaceholder": {
+    "message": "Nome (es. Io, Collega)"
+  },
+  "scheduleUntitled": {
+    "message": "Pianificazione senza nome"
+  },
+  "scheduleTo": {
+    "message": "Destinatari"
+  },
+  "scheduleToPlaceholder": {
+    "message": "indirizzo@esempio.it, altro@esempio.it"
+  },
+  "scheduleFrom": {
+    "message": "Invia dall'identità"
+  },
+  "scheduleDefaultIdentity": {
+    "message": "Identità predefinita"
+  },
+  "scheduleFrequency": {
+    "message": "Frequenza"
+  },
+  "freqDaily": {
+    "message": "Giornaliera"
+  },
+  "freqWeekly": {
+    "message": "Settimanale"
+  },
+  "freqMonthly": {
+    "message": "Mensile"
+  },
+  "scheduleTime": {
+    "message": "Ora"
+  },
+  "scheduleWeekday": {
+    "message": "Giorno della settimana"
+  },
+  "scheduleMonthDay": {
+    "message": "Giorno del mese (1–31)"
+  },
+  "scheduleIncludeZero": {
+    "message": "Invia anche se non ci sono email in attesa"
+  },
+  "scheduleExcludeTransactional": {
+    "message": "Escludi le email transazionali"
+  },
+  "scheduleSendNow": {
+    "message": "Salva e invia ora"
+  },
+  "scheduleRemove": {
+    "message": "Rimuovi"
+  },
+  "scheduleNext": {
+    "message": "Prossimo invio: $1"
+  },
+  "scheduleLastSent": {
+    "message": "Ultimo invio: $1 ($2 in attesa)"
+  },
+  "scheduleLastSkipped": {
+    "message": "Ultimo controllo: $1 (nessuna email in attesa, non inviato)"
+  },
+  "scheduleNeverSent": {
+    "message": "Mai inviato"
+  },
+  "scheduleLastError": {
+    "message": "Ultimo errore: $1"
+  },
+  "errScheduleRecipients": {
+    "message": "Controlla i destinatari di \"$1\": inserisci uno o più indirizzi email validi."
+  },
+  "toastReportSending": {
+    "message": "Invio del riepilogo in corso…"
+  },
+  "toastReportSent": {
+    "message": "Riepilogo inviato ($1 in attesa)."
+  },
+  "toastReportBusy": {
+    "message": "Questo riepilogo è già in fase di invio."
+  },
+  "reportTitle": {
+    "message": "Email in attesa di una tua risposta"
+  },
+  "reportPeriod": {
+    "message": "Periodo analizzato: $1 – $2"
+  },
+  "reportNothingPending": {
+    "message": "Nessuna email in attesa di risposta. Ottimo lavoro!"
+  },
+  "reportAccountCounts": {
+    "message": "$1 in attesa · $2 critiche · $3 in attenzione"
+  },
+  "reportNoCritical": {
+    "message": "Nessuna email critica."
+  },
+  "reportUnknownAccount": {
+    "message": "Altro"
+  },
+  "reportFooter": {
+    "message": "Inviato automaticamente da $1 (Thunderbird). Puoi modificarlo o disattivarlo nelle Opzioni dell'estensione."
+  },
+  "reportSubject": {
+    "message": "Email senza risposta: $1 in attesa, $2 critiche"
+  },
+  "reportSubjectLabel": {
+    "message": "[$1] Email senza risposta: $2 in attesa, $3 critiche"
   }
 }

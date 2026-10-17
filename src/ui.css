@@ -206,3 +206,26 @@ fieldset { border: 0; padding: 0; margin: 0; }
 .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
 .filters { margin-bottom: 12px; }
 .mt { margin-top: 14px; }
+
+/* Options: scheduled reports */
+.schedule-list { display: flex; flex-direction: column; gap: 12px; margin: 12px 0; }
+.schedule {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 14px; background: var(--surface-2);
+}
+.schedule.disabled { opacity: .7; }
+.schedule .head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+.schedule .head input[type="text"] { flex: 1 1 220px; }
+.schedule .status { margin-top: 10px; font-size: .85rem; color: var(--muted); }
+.schedule .status .error { color: var(--critical-fg); }
+.schedule .buttons { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+
+/* Dashboard: correspondents */
+.correspondents .list { max-height: 320px; overflow: auto; }
+.correspondents table td, .correspondents table th { padding: 6px 8px; }
+.correspondents tr[aria-selected="true"] td { background: var(--action-bg); }
+.correspondents .pick { border: 0; background: none; padding: 0; text-align: left; color: inherit; font: inherit; }
+.correspondents .pick:hover { text-decoration: underline; }
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+.chip-filter { display: inline-flex; align-items: center; gap: 6px; padding: 3px 4px 3px 10px; border-radius: 999px; background: var(--action-bg); color: var(--action-fg); font-size: .85rem; }
+.chip-filter button { border: 0; background: none; padding: 2px; color: inherit; }
