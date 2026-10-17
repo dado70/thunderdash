@@ -6,6 +6,9 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+- Roadmap: the companion service will support Linux and Windows (not macOS).
+
 ## [0.2.0] - 2026-10-17
 
 ### Added
