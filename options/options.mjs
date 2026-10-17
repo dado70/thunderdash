@@ -147,12 +147,21 @@ function weekdayNames() {
     new Date(2024, 0, 7 + i).toLocaleDateString(lang, { weekday: 'long' }));
 }
 
-function field(labelKey, control) {
+function field(labelKey, control, hintKey) {
   const label = document.createElement('label');
   label.className = 'field';
   const span = document.createElement('span');
   span.textContent = t(labelKey);
   label.append(span, control);
+  if (hintKey) {
+    // Always visible (a placeholder disappears as soon as the field has a value).
+    const hint = document.createElement('small');
+    hint.className = 'hint';
+    hint.id = `hint-${crypto.randomUUID()}`;
+    hint.textContent = t(hintKey);
+    control.setAttribute('aria-describedby', hint.id);
+    label.append(hint);
+  }
   return label;
 }
 
@@ -239,7 +248,7 @@ function scheduleCard(s) {
   freq.addEventListener('change', syncFreq);
   const idOptions = [['', t('scheduleDefaultIdentity')], ...identities.map(i => [i.id, i.label])];
   grid.append(
-    field('scheduleTo', input('text', 'to', s.to.join(', '), { placeholder: t('scheduleToPlaceholder') })),
+    field('scheduleTo', input('text', 'to', s.to.join(', '), { placeholder: t('scheduleToPlaceholder') }), 'scheduleToHint'),
     field('scheduleFrom', select('identityId', idOptions, identities.some(i => i.id === s.identityId) ? s.identityId : '')),
     field('scheduleFrequency', freq),
     field('scheduleTime', input('time', 'time', s.time, { required: '' })),

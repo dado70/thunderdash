@@ -532,5 +532,8 @@
   },
   "reportSubjectLabel": {
     "message": "[$1] Email senza risposta: $2 in attesa, $3 critiche"
+  },
+  "scheduleToHint": {
+    "message": "Separa più indirizzi con una virgola. Per una frequenza diversa aggiungi un'altra pianificazione."
   }
 }

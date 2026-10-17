@@ -229,3 +229,4 @@ fieldset { border: 0; padding: 0; margin: 0; }
 .num { text-align: right; font-variant-numeric: tabular-nums; }
 .chip-filter { display: inline-flex; align-items: center; gap: 6px; padding: 3px 4px 3px 10px; border-radius: 999px; background: var(--action-bg); color: var(--action-fg); font-size: .85rem; }
 .chip-filter button { border: 0; background: none; padding: 2px; color: inherit; }
+.field .hint { color: var(--muted); font-size: .78rem; }
