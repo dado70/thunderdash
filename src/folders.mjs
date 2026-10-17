@@ -13,17 +13,22 @@ const hasUse = (folder, use) => (folder.specialUse || []).includes(use);
 /**
  * Returns all accounts with a flat, ordered list of their folders.
  * Each folder carries: id, name, path, depth, accountId, accountName, key,
- * excluded (cannot be selected), defaultReceive, defaultSent.
+ * parentKey, hasChildren, isInbox, isSent, excluded (cannot be selected),
+ * excludedReason, defaultReceive, defaultSent.
  */
 export async function listAccountFolders() {
   const accounts = await messenger.accounts.list(true);
   return accounts.map(account => {
     const folders = [];
     const walk = (folder, depth, ctx) => {
-      const excluded = ctx.excluded || ALWAYS_EXCLUDED.some(u => hasUse(folder, u)) ||
-        folder.isVirtual || folder.isTag || folder.isUnified;
+      const ownUse = ALWAYS_EXCLUDED.find(u => hasUse(folder, u));
+      const reason = ctx.reason ? 'parent'
+        : ownUse || (folder.isVirtual ? 'virtual' : folder.isTag ? 'tag' : folder.isUnified ? 'unified' : '');
+      const excluded = Boolean(reason);
       const inInbox = !excluded && (ctx.inInbox || hasUse(folder, 'inbox'));
       const inSent = !excluded && (ctx.inSent || hasUse(folder, 'sent'));
+      const key = folderKey(account.id, folder.path);
+      const subs = folder.subFolders || [];
       if (!folder.isRoot) {
         folders.push({
           id: folder.id,
@@ -32,14 +37,25 @@ export async function listAccountFolders() {
           depth,
           accountId: account.id,
           accountName: account.name,
-          key: folderKey(account.id, folder.path),
+          key,
+          // Key of the parent folder, '' for top-level folders.
+          parentKey: ctx.parentKey || '',
+          hasChildren: subs.length > 0,
+          isInbox: hasUse(folder, 'inbox'),
+          isSent: hasUse(folder, 'sent'),
           excluded,
+          // Why the folder cannot be selected: a special use (junk, trash,
+          // drafts, templates, outbox), 'virtual', 'tag', 'unified' or
+          // 'parent' (inside an excluded folder).
+          excludedReason: reason,
           defaultReceive: inInbox,
           defaultSent: inSent
         });
       }
-      for (const sub of folder.subFolders || []) {
-        walk(sub, folder.isRoot ? depth : depth + 1, { excluded, inInbox, inSent });
+      for (const sub of subs) {
+        walk(sub, folder.isRoot ? depth : depth + 1, {
+          reason: excluded ? reason : '', inInbox, inSent, parentKey: folder.isRoot ? '' : key
+        });
       }
     };
     if (account.rootFolder) walk(account.rootFolder, 0, {});

@@ -364,5 +364,230 @@
   },
   "optCreateReplyTag": {
     "message": "Create the reply tag"
+  },
+  "corrTitle": {
+    "message": "Correspondents to reply to"
+  },
+  "corrSearch": {
+    "message": "Search correspondent"
+  },
+  "corrSearchPlaceholder": {
+    "message": "Name or address"
+  },
+  "corrPending": {
+    "message": "Pending"
+  },
+  "corrCritical": {
+    "message": "Critical"
+  },
+  "corrOldest": {
+    "message": "Oldest"
+  },
+  "corrFilterHint": {
+    "message": "Show only this correspondent's emails"
+  },
+  "corrNone": {
+    "message": "No correspondents awaiting a reply."
+  },
+  "corrNoMatch": {
+    "message": "No correspondent matches the search."
+  },
+  "corrShowAll": {
+    "message": "Show all ($1)"
+  },
+  "corrShowLess": {
+    "message": "Show fewer"
+  },
+  "corrActiveFilter": {
+    "message": "From: $1"
+  },
+  "corrClearFilter": {
+    "message": "Remove sender filter"
+  },
+  "secReports": {
+    "message": "Scheduled summary"
+  },
+  "optReportsHint": {
+    "message": "Sends an HTML summary (counters and critical emails, grouped by account, with tags and notes) using the accounts and folders selected above. Thunderbird must be running: a summary missed while it was closed is sent once at the next start-up."
+  },
+  "optSendSilent": {
+    "message": "Your Thunderbird version sends the summary in the background."
+  },
+  "optSendCompose": {
+    "message": "On Thunderbird versions before 153 a compose window opens briefly to send the summary."
+  },
+  "optReportRange": {
+    "message": "Summary period: last N days"
+  },
+  "optAddSchedule": {
+    "message": "Add schedule"
+  },
+  "scheduleEnabled": {
+    "message": "Active"
+  },
+  "scheduleLabel": {
+    "message": "Name"
+  },
+  "scheduleLabelPlaceholder": {
+    "message": "Name (e.g. Me, Colleague)"
+  },
+  "scheduleUntitled": {
+    "message": "Untitled schedule"
+  },
+  "scheduleTo": {
+    "message": "Recipients"
+  },
+  "scheduleToPlaceholder": {
+    "message": "address@example.com, other@example.com"
+  },
+  "scheduleFrom": {
+    "message": "Send from identity"
+  },
+  "scheduleDefaultIdentity": {
+    "message": "Default identity"
+  },
+  "scheduleFrequency": {
+    "message": "Frequency"
+  },
+  "freqDaily": {
+    "message": "Daily"
+  },
+  "freqWeekly": {
+    "message": "Weekly"
+  },
+  "freqMonthly": {
+    "message": "Monthly"
+  },
+  "scheduleTime": {
+    "message": "Time"
+  },
+  "scheduleWeekday": {
+    "message": "Day of the week"
+  },
+  "scheduleMonthDay": {
+    "message": "Day of the month (1–31)"
+  },
+  "scheduleIncludeZero": {
+    "message": "Send even when nothing is pending"
+  },
+  "scheduleExcludeTransactional": {
+    "message": "Exclude transactional emails"
+  },
+  "scheduleSendNow": {
+    "message": "Save and send now"
+  },
+  "scheduleRemove": {
+    "message": "Remove"
+  },
+  "scheduleNext": {
+    "message": "Next: $1"
+  },
+  "scheduleLastSent": {
+    "message": "Last sent: $1 ($2 pending)"
+  },
+  "scheduleLastSkipped": {
+    "message": "Last check: $1 (nothing pending, not sent)"
+  },
+  "scheduleNeverSent": {
+    "message": "Never sent"
+  },
+  "scheduleLastError": {
+    "message": "Last error: $1"
+  },
+  "errScheduleRecipients": {
+    "message": "Check the recipients of \"$1\": enter one or more valid e-mail addresses."
+  },
+  "toastReportSending": {
+    "message": "Sending the summary…"
+  },
+  "toastReportSent": {
+    "message": "Summary sent ($1 pending)."
+  },
+  "toastReportBusy": {
+    "message": "This summary is already being sent."
+  },
+  "reportTitle": {
+    "message": "Emails awaiting your reply"
+  },
+  "reportPeriod": {
+    "message": "Period analyzed: $1 – $2"
+  },
+  "reportNothingPending": {
+    "message": "No emails awaiting a reply. Well done!"
+  },
+  "reportAccountCounts": {
+    "message": "$1 pending · $2 critical · $3 warning"
+  },
+  "reportNoCritical": {
+    "message": "No critical emails."
+  },
+  "reportUnknownAccount": {
+    "message": "Other"
+  },
+  "reportFooter": {
+    "message": "Sent automatically by $1 (Thunderbird). Change or disable it in the extension Options."
+  },
+  "reportSubject": {
+    "message": "Unanswered emails: $1 pending, $2 critical"
+  },
+  "reportSubjectLabel": {
+    "message": "[$1] Unanswered emails: $2 pending, $3 critical"
+  },
+  "scheduleToHint": {
+    "message": "Separate several addresses with a comma. For a different frequency, add another schedule."
+  },
+  "optSelectInboxes": {
+    "message": "Select all Inboxes"
+  },
+  "optDeselectInboxes": {
+    "message": "Deselect all Inboxes"
+  },
+  "optSelectSent": {
+    "message": "Select all Sent"
+  },
+  "optDeselectSent": {
+    "message": "Deselect all Sent"
+  },
+  "optExpandAll": {
+    "message": "Expand all"
+  },
+  "optCollapseAll": {
+    "message": "Collapse all"
+  },
+  "optToggleAccount": {
+    "message": "Expand or collapse account $1"
+  },
+  "optToggleFolder": {
+    "message": "Expand or collapse folder $1"
+  },
+  "excluded_junk": {
+    "message": "spam"
+  },
+  "excluded_trash": {
+    "message": "trash"
+  },
+  "excluded_drafts": {
+    "message": "drafts"
+  },
+  "excluded_templates": {
+    "message": "templates"
+  },
+  "excluded_outbox": {
+    "message": "outbox"
+  },
+  "excluded_virtual": {
+    "message": "saved search"
+  },
+  "excluded_tag": {
+    "message": "tag folder"
+  },
+  "excluded_unified": {
+    "message": "unified folder"
+  },
+  "excluded_parent": {
+    "message": "inside an excluded folder"
+  },
+  "optResetFoldersHint": {
+    "message": "Re-reads the role of each folder from Thunderbird and restores the default selection: Inbox and its subfolders as Received, Sent folders as Sent. Press Save to apply."
   }
 }

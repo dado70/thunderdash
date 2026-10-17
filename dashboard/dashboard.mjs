@@ -2,7 +2,7 @@
 // Copyright (C) 2026 Alessandro (dado) Scapuzzi <dado70@gmail.com>
 
 import {
-  DAY_MS, ageInDays, buildCsv, filterRows, severity, sortRows
+  DAY_MS, ageInDays, buildCsv, filterRows, groupByCorrespondent, severity, sortRows
 } from '../src/core.mjs';
 import { t, localizeDocument, formatDateTime, toDateInput, fromDateInput } from '../src/i18n.mjs';
 import { icon } from '../src/icons.mjs';
@@ -18,7 +18,8 @@ const state = {
   ignored: {},
   tags: [],
   scan: null,
-  filters: { view: 'pending', text: '', account: '', type: '', tag: '', severity: '', hideTransactional: false },
+  filters: { view: 'pending', text: '', account: '', type: '', tag: '', severity: '', sender: '', hideTransactional: false },
+  corr: { search: '', showAll: false },
   sort: { key: 'age', dir: 'desc' },
   abort: null,
   visible: []
@@ -180,11 +181,64 @@ function renderRow(r) {
   );
 }
 
+const CORR_LIMIT = 10;
+
+function setSender(email) {
+  state.filters.sender = state.filters.sender === email ? '' : email;
+  render();
+  if (state.filters.sender) $('resultsTitle').scrollIntoView({ block: 'start', behavior: 'smooth' });
+}
+
+// Correspondents of the current view and filters (except sender, text search
+// and severity, so the list keeps showing everyone awaiting a reply).
+function renderCorrespondents(rows) {
+  const base = filterRows(rows, { ...state.filters, sender: '', text: '', severity: '' });
+  const groups = groupByCorrespondent(base);
+  const q = state.corr.search.trim().toLowerCase();
+  const matches = q ? groups.filter(g => `${g.name} ${g.email}`.toLowerCase().includes(q)) : groups;
+  const shown = state.corr.showAll || q ? matches : matches.slice(0, CORR_LIMIT);
+  const now = Date.now();
+
+  $('corrRows').replaceChildren(...shown.map(g => {
+    const days = ageInDays(g.oldest, now);
+    const sev = severity(days, state.settings.warningDays, state.settings.criticalDays);
+    const selected = state.filters.sender === g.email;
+    const pick = el('button', {
+      type: 'button', class: 'pick', 'aria-pressed': String(selected),
+      title: t('corrFilterHint'), onclick: () => setSender(g.email)
+    }, el('strong', { text: g.name }), g.name !== g.email ? el('span', { class: 'small muted', text: ` ${g.email}` }) : null);
+    return el('tr', { 'aria-selected': String(selected) },
+      el('td', {}, pick),
+      el('td', { class: 'num', text: String(g.count) }),
+      el('td', { class: 'num' }, g.critical ? el('span', { class: 'badge critical', text: String(g.critical) }) : '0'),
+      el('td', { class: 'num' }, el('span', { class: `badge ${sev}`, text: days === 1 ? t('dayOne') : t('dayMany', [String(days)]) }))
+    );
+  }));
+
+  const empty = $('corrEmpty');
+  empty.textContent = q ? t('corrNoMatch') : t('corrNone');
+  empty.classList.toggle('hidden', shown.length > 0 || !state.scan);
+  const toggle = $('corrToggle');
+  toggle.classList.toggle('hidden', Boolean(q) || matches.length <= CORR_LIMIT);
+  toggle.textContent = state.corr.showAll ? t('corrShowLess') : t('corrShowAll', [String(matches.length)]);
+
+  const chip = $('senderChip');
+  if (state.filters.sender) {
+    const g = groups.find(x => x.email === state.filters.sender);
+    const clear = el('button', { type: 'button', title: t('corrClearFilter'), 'aria-label': t('corrClearFilter'),
+      onclick: () => setSender(state.filters.sender) });
+    clear.append(icon('x'));
+    chip.replaceChildren(el('span', { text: t('corrActiveFilter', [g?.name || state.filters.sender]) }), clear);
+  }
+  chip.classList.toggle('hidden', !state.filters.sender);
+}
+
 function render() {
   const rows = allRows();
   renderHeader();
   renderStats(rows);
   renderFilterOptions(rows);
+  renderCorrespondents(rows);
 
   const visible = sortRows(filterRows(rows, state.filters), state.sort.key, state.sort.dir);
   state.visible = visible;
@@ -390,6 +444,8 @@ function bindFilters() {
   $('filterType').addEventListener('change', e => { f.type = e.target.value; render(); });
   $('filterTag').addEventListener('change', e => { f.tag = e.target.value; render(); });
   $('hideTransactional').addEventListener('change', e => { f.hideTransactional = e.target.checked; render(); });
+  $('corrSearch').addEventListener('input', e => { state.corr.search = e.target.value; render(); });
+  $('corrToggle').addEventListener('click', () => { state.corr.showAll = !state.corr.showAll; render(); });
   for (const b of document.querySelectorAll('[data-view]')) {
     b.addEventListener('click', () => { f.view = b.dataset.view; render(); });
   }

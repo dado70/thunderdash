@@ -24,7 +24,10 @@ export const DEFAULT_SETTINGS = Object.freeze({
   // true = include, false = exclude. Missing key = default behaviour.
   receiveOverrides: {},
   sentOverrides: {},
-  headerCacheDays: 400
+  headerCacheDays: 400,
+  // Scheduled reports (see sanitizeSchedule).
+  reportRangeDays: 30,
+  schedules: []
 });
 
 /**
@@ -32,12 +35,18 @@ export const DEFAULT_SETTINGS = Object.freeze({
  * values of the wrong type.
  */
 export function mergeSettings(stored) {
-  const out = { ...DEFAULT_SETTINGS };
+  // Copy arrays and objects, so callers never mutate the frozen defaults.
+  const out = {};
+  for (const [key, def] of Object.entries(DEFAULT_SETTINGS)) {
+    out[key] = Array.isArray(def) ? [...def] : typeof def === 'object' ? { ...def } : def;
+  }
   if (!stored || typeof stored !== 'object') return out;
   for (const [key, def] of Object.entries(DEFAULT_SETTINGS)) {
     const val = stored[key];
     if (val === undefined || val === null) continue;
-    if (Array.isArray(def)) {
+    if (key === 'schedules') {
+      if (Array.isArray(val)) out.schedules = val.map(sanitizeSchedule).filter(Boolean);
+    } else if (Array.isArray(def)) {
       if (Array.isArray(val)) out[key] = val.filter(v => typeof v === 'string');
     } else if (typeof def === 'object') {
       if (typeof val === 'object' && !Array.isArray(val)) out[key] = { ...val };
@@ -48,6 +57,7 @@ export function mergeSettings(stored) {
   if (!(out.warningDays >= 0)) out.warningDays = DEFAULT_SETTINGS.warningDays;
   if (!(out.criticalDays > out.warningDays)) out.criticalDays = out.warningDays + 1;
   if (!(out.defaultRangeDays >= 1)) out.defaultRangeDays = DEFAULT_SETTINGS.defaultRangeDays;
+  if (!(out.reportRangeDays >= 1)) out.reportRangeDays = DEFAULT_SETTINGS.reportRangeDays;
   return out;
 }
 
@@ -200,6 +210,7 @@ export function filterRows(rows, f) {
     if (f.type === 'transactional' && !r.transactional) return false;
     if (f.account && r.accountId !== f.account) return false;
     if (f.tag && !(r.tags || []).includes(f.tag)) return false;
+    if (f.sender && r.authorEmail !== f.sender) return false;
     if (f.severity && r.severity !== f.severity) return false;
     if (text) {
       const hay = `${r.author} ${r.subject} ${r.note || ''}`.toLowerCase();
@@ -278,4 +289,131 @@ export function sanitizeBackup(data) {
     }
   }
   return clean;
+}
+
+/**
+ * Groups rows by sender address, most urgent correspondents first.
+ * @returns {Array<{email: string, name: string, count: number, critical: number,
+ *   warning: number, oldest: number}>}
+ */
+export function groupByCorrespondent(rows) {
+  const map = new Map();
+  for (const r of rows) {
+    const email = r.authorEmail || (r.author || '').toLowerCase();
+    if (!email) continue;
+    let g = map.get(email);
+    if (!g) {
+      g = { email, name: r.authorName || r.author || email, count: 0, critical: 0, warning: 0, oldest: r.date };
+      map.set(email, g);
+    }
+    g.count++;
+    if (r.severity === 'critical') g.critical++;
+    else if (r.severity === 'warning') g.warning++;
+    if (r.date < g.oldest) g.oldest = r.date;
+  }
+  return [...map.values()].sort((a, b) =>
+    b.critical - a.critical || b.count - a.count || a.oldest - b.oldest || a.email.localeCompare(b.email));
+}
+
+// ------------------------------------------------------------- schedules
+
+export const FREQUENCIES = ['daily', 'weekly', 'monthly'];
+const EMAIL_RE = /^[^\s@<>,;"]+@[^\s@<>,;"]+\.[^\s@<>,;"]+$/;
+
+export const isValidEmail = s => typeof s === 'string' && EMAIL_RE.test(s.trim());
+
+/** Splits a recipients text (comma, semicolon, newline) into valid addresses. */
+export function parseRecipients(text) {
+  if (typeof text !== 'string') return [];
+  return [...new Set(text.split(/[\s,;]+/).map(s => s.trim().toLowerCase()).filter(isValidEmail))];
+}
+
+/**
+ * Validates a scheduled report definition; returns a clean copy or null.
+ * weekday: 0 = Sunday … 6 = Saturday (as Date.getDay()). monthDay: 1–31,
+ * clamped to the length of shorter months.
+ */
+export function sanitizeSchedule(s) {
+  if (!s || typeof s !== 'object' || typeof s.id !== 'string' || !s.id) return null;
+  const time = typeof s.time === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(s.time) ? s.time : '08:00';
+  const int = (v, min, max, def) => (Number.isInteger(v) && v >= min && v <= max ? v : def);
+  return {
+    id: s.id,
+    enabled: s.enabled !== false,
+    label: typeof s.label === 'string' ? s.label.slice(0, 80) : '',
+    to: Array.isArray(s.to) ? [...new Set(s.to.map(x => String(x).trim().toLowerCase()).filter(isValidEmail))] : [],
+    identityId: typeof s.identityId === 'string' ? s.identityId : '',
+    frequency: FREQUENCIES.includes(s.frequency) ? s.frequency : 'daily',
+    time,
+    weekday: int(s.weekday, 0, 6, 1),
+    monthDay: int(s.monthDay, 1, 31, 1),
+    includeZero: s.includeZero !== false,
+    excludeTransactional: s.excludeTransactional !== false,
+    updatedAt: Number(s.updatedAt) || 0
+  };
+}
+
+const daysInMonth = (y, m) => new Date(y, m + 1, 0).getDate();
+
+function at(y, m, d, time) {
+  const [hh, mm] = time.split(':').map(Number);
+  return new Date(y, m, d, hh, mm, 0, 0);
+}
+
+function monthly(y, m, s) {
+  // Normalize month overflow before clamping the day.
+  const first = new Date(y, m, 1);
+  const yy = first.getFullYear(), mo = first.getMonth();
+  return at(yy, mo, Math.min(s.monthDay, daysInMonth(yy, mo)), s.time);
+}
+
+/** Latest scheduled time <= now (local time, DST-safe). */
+export function previousOccurrence(s, now) {
+  const n = new Date(now);
+  const y = n.getFullYear(), m = n.getMonth(), d = n.getDate();
+  let c;
+  if (s.frequency === 'daily') {
+    c = at(y, m, d, s.time);
+    if (c > n) c = at(y, m, d - 1, s.time);
+  } else if (s.frequency === 'weekly') {
+    c = at(y, m, d - ((n.getDay() - s.weekday + 7) % 7), s.time);
+    if (c > n) c = at(c.getFullYear(), c.getMonth(), c.getDate() - 7, s.time);
+  } else {
+    c = monthly(y, m, s);
+    if (c > n) c = monthly(y, m - 1, s);
+  }
+  return c.getTime();
+}
+
+/** First scheduled time > now. */
+export function nextOccurrence(s, now) {
+  const n = new Date(now);
+  const y = n.getFullYear(), m = n.getMonth(), d = n.getDate();
+  let c;
+  if (s.frequency === 'daily') {
+    c = at(y, m, d, s.time);
+    if (c <= n) c = at(y, m, d + 1, s.time);
+  } else if (s.frequency === 'weekly') {
+    c = at(y, m, d + ((s.weekday - n.getDay() + 7) % 7), s.time);
+    if (c <= n) c = at(c.getFullYear(), c.getMonth(), c.getDate() + 7, s.time);
+  } else {
+    c = monthly(y, m, s);
+    if (c <= n) c = monthly(y, m + 1, s);
+  }
+  return c.getTime();
+}
+
+/**
+ * True if an occurrence passed since the last run and since the schedule was
+ * last edited. Missed occurrences (Thunderbird closed) collapse into one run.
+ */
+export function isDue(s, lastRunAt, now) {
+  if (!s.enabled || !s.to.length) return false;
+  return previousOccurrence(s, now) > Math.max(lastRunAt || 0, s.updatedAt || 0);
+}
+
+/** Escapes text for inclusion in an HTML string (used for report e-mails). */
+export function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, c =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 }

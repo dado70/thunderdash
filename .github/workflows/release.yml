@@ -39,7 +39,22 @@ jobs:
       - name: Build .xpi
         run: bash scripts/build.sh
 
+      - name: Release notes from CHANGELOG.md
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          awk -v v="$version" '
+            $0 ~ "^## \\[" v "\\]" { on = 1; next }
+            on && /^## \[/ { exit }
+            on && /^\[[^]]+\]: / { exit }
+            on { print }
+          ' CHANGELOG.md > dist/notes.md
+          if [ ! -s dist/notes.md ]; then
+            echo "No section for ${version} in CHANGELOG.md" >&2
+            exit 1
+          fi
+          cat dist/notes.md
+
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "${GITHUB_REF_NAME}" dist/*.xpi --title "${GITHUB_REF_NAME}" --generate-notes
+        run: gh release create "${GITHUB_REF_NAME}" dist/*.xpi --title "${GITHUB_REF_NAME}" --notes-file dist/notes.md

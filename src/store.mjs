@@ -14,7 +14,9 @@ export const KEYS = Object.freeze({
   notes: 'notes',
   ignored: 'ignored',
   headerCache: 'headerCache',
-  lastScan: 'lastScan'
+  lastScan: 'lastScan',
+  // { [scheduleId]: { lastRunAt, lastOkAt, lastError, lastPending } }
+  scheduleState: 'scheduleState'
 });
 
 async function getKey(key, fallback) {
@@ -36,6 +38,15 @@ export const loadNotes = () => getKey(KEYS.notes, {});
 export const loadIgnored = () => getKey(KEYS.ignored, {});
 export const loadHeaderCache = () => getKey(KEYS.headerCache, {});
 export const loadLastScan = () => getKey(KEYS.lastScan, null);
+
+export const loadScheduleState = () => getKey(KEYS.scheduleState, {});
+
+export async function updateScheduleState(id, patch) {
+  const all = await loadScheduleState();
+  all[id] = { ...(all[id] || {}), ...patch };
+  await local().set({ [KEYS.scheduleState]: all });
+  return all[id];
+}
 
 export const saveHeaderCache = cache => local().set({ [KEYS.headerCache]: cache });
 export const saveLastScan = scan => local().set({ [KEYS.lastScan]: scan });

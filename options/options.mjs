@@ -1,15 +1,21 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (C) 2026 Alessandro (dado) Scapuzzi <dado70@gmail.com>
 
-import { DEFAULT_TRANSACTIONAL_KEYWORDS, parseKeywordList } from '../src/core.mjs';
+import {
+  DEFAULT_TRANSACTIONAL_KEYWORDS, nextOccurrence, parseKeywordList, parseRecipients, sanitizeSchedule
+} from '../src/core.mjs';
 import { listAccountFolders } from '../src/folders.mjs';
-import { t, localizeDocument, toDateInput } from '../src/i18n.mjs';
+import { t, localizeDocument, toDateInput, formatDateTime } from '../src/i18n.mjs';
+import { canSendSilently } from '../src/mailer.mjs';
+import { icon } from '../src/icons.mjs';
 import { ensureReplyTag } from '../src/actions.mjs';
 import * as store from '../src/store.mjs';
 
 const $ = id => document.getElementById(id);
 let accounts = [];
 let settings = null;
+let identities = [];   // [{id, label, email}]
+let scheduleState = {};
 
 let toastTimer;
 function toast(message, isError = false) {
@@ -44,32 +50,124 @@ function checkbox(folder, kind) {
   return input;
 }
 
+// Collapsed account ids / folder keys. Remembered per viewer in localStorage
+// (a convenience only: everything works if storage is unavailable).
+const COLLAPSED_KEY = 'thunderdash.collapsedFolders';
+let collapsed = new Set();
+try {
+  collapsed = new Set(JSON.parse(localStorage.getItem(COLLAPSED_KEY) || '[]'));
+} catch {
+  collapsed = new Set();
+}
+function saveCollapsed() {
+  try {
+    localStorage.setItem(COLLAPSED_KEY, JSON.stringify([...collapsed]));
+  } catch {
+    // Ignore: private mode or blocked storage.
+  }
+}
+
+function toggleButton(key, label) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'icon-only toggle';
+  b.dataset.toggle = key;
+  b.setAttribute('aria-label', label);
+  b.addEventListener('click', () => {
+    if (collapsed.has(key)) collapsed.delete(key);
+    else collapsed.add(key);
+    saveCollapsed();
+    applyCollapsed();
+  });
+  return b;
+}
+
+// Shows/hides rows according to the collapsed ancestors and updates toggles.
+function applyCollapsed() {
+  for (const tr of document.querySelectorAll('#folderRows tr[data-ancestors]')) {
+    const ancestors = tr.dataset.ancestors.split('\n');
+    tr.classList.toggle('hidden', ancestors.some(a => collapsed.has(a)));
+  }
+  for (const b of document.querySelectorAll('#folderRows button[data-toggle]')) {
+    const open = !collapsed.has(b.dataset.toggle);
+    b.setAttribute('aria-expanded', String(open));
+    b.replaceChildren(icon(open ? 'chevron-down' : 'chevron-right'));
+  }
+}
+
 function renderFolders() {
   const rows = [];
   for (const acc of accounts) {
+    const accKey = `account:${acc.id}`;
     const head = document.createElement('tr');
     head.className = 'account-row';
     const td = document.createElement('td');
     td.colSpan = 3;
-    td.textContent = acc.name;
+    const title = document.createElement('span');
+    title.textContent = acc.name;
+    td.append(toggleButton(accKey, t('optToggleAccount', [acc.name])), title);
     head.append(td);
     rows.push(head);
+
+    const ancestorsOf = new Map();
     for (const f of acc.folders) {
+      const ancestors = [accKey, ...(f.parentKey ? [...ancestorsOf.get(f.parentKey), f.parentKey] : [])];
+      ancestorsOf.set(f.key, ancestors.slice(1));
       const tr = document.createElement('tr');
+      tr.dataset.ancestors = ancestors.join('\n');
       if (f.excluded) tr.className = 'excluded';
-      const name = document.createElement('td');
+      const cell = document.createElement('td');
+      const name = document.createElement('div');
       name.className = 'name';
-      name.style.paddingLeft = `${10 + f.depth * 18}px`;
-      name.textContent = f.excluded ? `${f.name} (${t('optExcluded')})` : f.name;
+      name.style.paddingLeft = `${f.depth * 20}px`;
+      cell.append(name);
+      if (f.hasChildren) {
+        name.append(toggleButton(f.key, t('optToggleFolder', [f.name])));
+      } else {
+        const spacer = document.createElement('span');
+        spacer.className = 'toggle-spacer';
+        name.append(spacer);
+      }
+      const label = document.createElement('span');
+      label.textContent = f.name;
+      name.append(label);
+      if (f.excluded) {
+        const why = document.createElement('span');
+        why.className = 'small muted';
+        why.textContent = ` (${t('optExcluded')}: ${t(`excluded_${f.excludedReason}`)})`;
+        name.append(why);
+      }
       const rc = document.createElement('td');
       rc.append(checkbox(f, 'receive'));
       const sc = document.createElement('td');
       sc.append(checkbox(f, 'sent'));
-      tr.append(name, rc, sc);
+      tr.append(cell, rc, sc);
       rows.push(tr);
     }
   }
   $('folderRows').replaceChildren(...rows);
+  applyCollapsed();
+}
+
+/** Checks or unchecks the given column for all Inbox (or Sent) folders. */
+function setAll(kind, flag, value) {
+  for (const acc of accounts) {
+    for (const f of acc.folders) {
+      if (!f[flag] || f.excluded) continue;
+      const input = document.querySelector(
+        `#folderRows input[data-kind="${kind}"][data-key="${CSS.escape(f.key)}"]`);
+      if (input) input.checked = value;
+    }
+  }
+}
+
+function setAllExpanded(open) {
+  collapsed = open ? new Set() : new Set([
+    ...accounts.map(a => `account:${a.id}`),
+    ...accounts.flatMap(a => a.folders.filter(f => f.hasChildren).map(f => f.key))
+  ]);
+  saveCollapsed();
+  applyCollapsed();
 }
 
 function fillForm() {
@@ -80,7 +178,9 @@ function fillForm() {
   $('hideTransactional').checked = settings.hideTransactional;
   $('transactionalKeywords').value = settings.transactionalKeywords.join('\n');
   $('customExclusions').value = settings.customExclusions.join('\n');
+  $('reportRangeDays').value = settings.reportRangeDays;
   renderFolders();
+  renderSchedules(settings.schedules);
 }
 
 function readForm() {
@@ -103,7 +203,9 @@ function readForm() {
     transactionalKeywords: parseKeywordList($('transactionalKeywords').value),
     customExclusions: parseKeywordList($('customExclusions').value),
     receiveOverrides,
-    sentOverrides
+    sentOverrides,
+    reportRangeDays: Number($('reportRangeDays').value),
+    schedules: readSchedules()
   };
 }
 
@@ -115,10 +217,250 @@ async function save(ev) {
       toast(t('errThresholds'), true);
       return;
     }
+    const invalid = invalidSchedule();
+    if (invalid) {
+      toast(t('errScheduleRecipients', [invalid]), true);
+      return;
+    }
     settings = await store.saveSettings(next);
     fillForm();
     toast(t('toastSettingsSaved'));
   });
+}
+
+// ------------------------------------------------------------ schedules
+
+const SCHEDULE_FIELDS = ['enabled', 'label', 'to', 'identityId', 'frequency', 'time', 'weekday', 'monthDay',
+  'includeZero', 'excludeTransactional'];
+
+function weekdayNames() {
+  const lang = messenger.i18n.getUILanguage();
+  // 2024-01-07 was a Sunday: index 0 = Sunday, as Date.getDay().
+  return Array.from({ length: 7 }, (_, i) =>
+    new Date(2024, 0, 7 + i).toLocaleDateString(lang, { weekday: 'long' }));
+}
+
+function field(labelKey, control, hintKey) {
+  const label = document.createElement('label');
+  label.className = 'field';
+  const span = document.createElement('span');
+  span.textContent = t(labelKey);
+  label.append(span, control);
+  if (hintKey) {
+    // Always visible (a placeholder disappears as soon as the field has a value).
+    const hint = document.createElement('small');
+    hint.className = 'hint';
+    hint.id = `hint-${crypto.randomUUID()}`;
+    hint.textContent = t(hintKey);
+    control.setAttribute('aria-describedby', hint.id);
+    label.append(hint);
+  }
+  return label;
+}
+
+function input(type, name, value, attrs = {}) {
+  const el = document.createElement('input');
+  el.type = type;
+  el.dataset.field = name;
+  if (type === 'checkbox') el.checked = Boolean(value);
+  else el.value = value ?? '';
+  for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+  return el;
+}
+
+function select(name, options, value) {
+  const el = document.createElement('select');
+  el.dataset.field = name;
+  for (const [v, text] of options) {
+    const o = document.createElement('option');
+    o.value = String(v);
+    o.textContent = text;
+    el.append(o);
+  }
+  el.value = String(value);
+  return el;
+}
+
+function checkLabel(control, labelKey) {
+  const label = document.createElement('label');
+  label.className = 'inline';
+  const span = document.createElement('span');
+  span.textContent = t(labelKey);
+  label.append(control, span);
+  return label;
+}
+
+function statusText(s) {
+  const st = scheduleState[s.id] || {};
+  const parts = [];
+  if (s.enabled && s.to.length && s.updatedAt) parts.push(t('scheduleNext', [formatDateTime(nextOccurrence(s, Date.now()))]));
+  if (st.lastOkAt) parts.push(st.lastSkipped
+    ? t('scheduleLastSkipped', [formatDateTime(st.lastOkAt)])
+    : t('scheduleLastSent', [formatDateTime(st.lastOkAt), String(st.lastPending ?? 0)]));
+  return { text: parts.join(' · ') || t('scheduleNeverSent'), error: st.lastError && (!st.lastOkAt || st.lastErrorAt > st.lastOkAt) ? st.lastError : '' };
+}
+
+function renderStatus(container, s) {
+  const st = statusText(s);
+  container.textContent = st.text;
+  if (st.error) {
+    const err = document.createElement('div');
+    err.className = 'error';
+    err.textContent = t('scheduleLastError', [st.error]);
+    container.append(err);
+  }
+}
+
+function scheduleCard(s) {
+  const card = document.createElement('fieldset');
+  card.className = 'schedule' + (s.enabled ? '' : ' disabled');
+  card.dataset.id = s.id;
+  card.dataset.updatedAt = String(s.updatedAt || 0);
+  card.dataset.original = JSON.stringify(SCHEDULE_FIELDS.map(k => s[k]));
+
+  const legend = document.createElement('legend');
+  legend.className = 'visually-hidden';
+  legend.textContent = s.label || t('scheduleUntitled');
+
+  const head = document.createElement('div');
+  head.className = 'head';
+  const enabled = input('checkbox', 'enabled', s.enabled);
+  enabled.addEventListener('change', () => card.classList.toggle('disabled', !enabled.checked));
+  head.append(checkLabel(enabled, 'scheduleEnabled'),
+    input('text', 'label', s.label, { maxlength: '80', placeholder: t('scheduleLabelPlaceholder'), 'aria-label': t('scheduleLabel') }));
+
+  const grid = document.createElement('div');
+  grid.className = 'settings-grid';
+  const freq = select('frequency', [['daily', t('freqDaily')], ['weekly', t('freqWeekly')], ['monthly', t('freqMonthly')]], s.frequency);
+  const weekday = field('scheduleWeekday', select('weekday', weekdayNames().map((n, i) => [i, n]), s.weekday));
+  const monthDay = field('scheduleMonthDay', input('number', 'monthDay', s.monthDay, { min: '1', max: '31' }));
+  const syncFreq = () => {
+    weekday.classList.toggle('hidden', freq.value !== 'weekly');
+    monthDay.classList.toggle('hidden', freq.value !== 'monthly');
+  };
+  freq.addEventListener('change', syncFreq);
+  const idOptions = [['', t('scheduleDefaultIdentity')], ...identities.map(i => [i.id, i.label])];
+  grid.append(
+    field('scheduleTo', input('text', 'to', s.to.join(', '), { placeholder: t('scheduleToPlaceholder') }), 'scheduleToHint'),
+    field('scheduleFrom', select('identityId', idOptions, identities.some(i => i.id === s.identityId) ? s.identityId : '')),
+    field('scheduleFrequency', freq),
+    field('scheduleTime', input('time', 'time', s.time, { required: '' })),
+    weekday,
+    monthDay
+  );
+  syncFreq();
+
+  const opts = document.createElement('div');
+  opts.className = 'row mt';
+  opts.append(
+    checkLabel(input('checkbox', 'includeZero', s.includeZero), 'scheduleIncludeZero'),
+    checkLabel(input('checkbox', 'excludeTransactional', s.excludeTransactional), 'scheduleExcludeTransactional')
+  );
+
+  const status = document.createElement('div');
+  status.className = 'status';
+  renderStatus(status, s);
+
+  const buttons = document.createElement('div');
+  buttons.className = 'buttons';
+  const sendNow = document.createElement('button');
+  sendNow.type = 'button';
+  sendNow.textContent = t('scheduleSendNow');
+  sendNow.addEventListener('click', () => sendScheduleNow(s.id, sendNow));
+  const remove = document.createElement('button');
+  remove.type = 'button';
+  remove.className = 'danger';
+  remove.textContent = t('scheduleRemove');
+  // Removal takes effect on Save, like every other change on this page.
+  remove.addEventListener('click', () => card.remove());
+  buttons.append(sendNow, remove);
+
+  card.append(legend, head, grid, opts, status, buttons);
+  return card;
+}
+
+function renderSchedules(list) {
+  $('scheduleList').replaceChildren(...list.map(scheduleCard));
+}
+
+function readSchedules() {
+  const now = Date.now();
+  return [...document.querySelectorAll('#scheduleList .schedule')].map(card => {
+    const get = name => card.querySelector(`[data-field="${name}"]`);
+    const raw = {
+      id: card.dataset.id,
+      enabled: get('enabled').checked,
+      label: get('label').value.trim(),
+      to: parseRecipients(get('to').value),
+      identityId: get('identityId').value,
+      frequency: get('frequency').value,
+      time: get('time').value,
+      weekday: Number(get('weekday').value),
+      monthDay: Number(get('monthDay').value),
+      includeZero: get('includeZero').checked,
+      excludeTransactional: get('excludeTransactional').checked
+    };
+    // A changed schedule restarts from now: past occurrences are not sent.
+    const changed = JSON.stringify(SCHEDULE_FIELDS.map(k => raw[k])) !== card.dataset.original;
+    raw.updatedAt = changed || !Number(card.dataset.updatedAt) ? now : Number(card.dataset.updatedAt);
+    return sanitizeSchedule(raw);
+  }).filter(Boolean);
+}
+
+/** Returns the label of the first enabled schedule with invalid recipients. */
+function invalidSchedule() {
+  for (const card of document.querySelectorAll('#scheduleList .schedule')) {
+    const get = name => card.querySelector(`[data-field="${name}"]`);
+    if (!get('enabled').checked) continue;
+    const text = get('to').value;
+    const tokens = text.split(/[\s,;]+/).filter(Boolean);
+    if (!tokens.length || parseRecipients(text).length !== new Set(tokens.map(x => x.toLowerCase())).size) {
+      return get('label').value.trim() || t('scheduleUntitled');
+    }
+  }
+  return '';
+}
+
+function addSchedule() {
+  const me = identities[0]?.email || '';
+  const s = sanitizeSchedule({ id: crypto.randomUUID(), to: me ? [me] : [], updatedAt: 0 });
+  $('scheduleList').append(scheduleCard(s));
+  $('scheduleList').lastElementChild.querySelector('[data-field="label"]').focus();
+}
+
+async function sendScheduleNow(id, button) {
+  await run(async () => {
+    // Save pending edits first, so the report uses what is on screen.
+    const next = readForm();
+    const invalid = invalidSchedule();
+    if (invalid) {
+      toast(t('errScheduleRecipients', [invalid]), true);
+      return;
+    }
+    settings = await store.saveSettings(next);
+    if (!settings.schedules.some(s => s.id === id)) return;
+    button.disabled = true;
+    toast(t('toastReportSending'));
+    try {
+      const res = await messenger.runtime.sendMessage({ type: 'thunderdash:sendReportNow', id });
+      if (res?.busy) toast(t('toastReportBusy'));
+      else if (!res?.ok) throw new Error(res?.error || 'unknown');
+      else toast(t('toastReportSent', [String(res.pending)]));
+    } finally {
+      button.disabled = false;
+      scheduleState = await store.loadScheduleState();
+      fillForm();
+    }
+  });
+}
+
+async function loadIdentities() {
+  const list = await messenger.accounts.list(false);
+  return list.flatMap(acc => (acc.identities || []).map(i => ({
+    id: i.id,
+    email: (i.email || '').toLowerCase(),
+    label: `${i.name ? `${i.name} <${i.email}>` : i.email} — ${acc.name}`
+  })));
 }
 
 async function exportBackup() {
@@ -157,8 +499,20 @@ async function importBackup(ev) {
 
 async function init() {
   localizeDocument();
-  [settings, accounts] = await Promise.all([store.loadSettings(), listAccountFolders()]);
+  [settings, accounts, identities, scheduleState] = await Promise.all([
+    store.loadSettings(), listAccountFolders(), loadIdentities(), store.loadScheduleState()
+  ]);
+  $('composeHint').textContent = canSendSilently() ? t('optSendSilent') : t('optSendCompose');
   fillForm();
+  $('addSchedule').addEventListener('click', addSchedule);
+  messenger.storage.onChanged.addListener(async (changes, areaName) => {
+    if (areaName !== 'local' || !changes[store.KEYS.scheduleState]) return;
+    scheduleState = changes[store.KEYS.scheduleState].newValue || {};
+    for (const s of settings.schedules) {
+      const status = document.querySelector(`#scheduleList .schedule[data-id="${CSS.escape(s.id)}"] .status`);
+      if (status) renderStatus(status, s);
+    }
+  });
 
   $('settingsForm').addEventListener('submit', save);
   $('resetKeywords').addEventListener('click', () => {
@@ -169,6 +523,12 @@ async function init() {
       if (!input.disabled) input.checked = input.dataset.default === 'true';
     }
   });
+  $('selectInboxes').addEventListener('click', () => setAll('receive', 'isInbox', true));
+  $('deselectInboxes').addEventListener('click', () => setAll('receive', 'isInbox', false));
+  $('selectSent').addEventListener('click', () => setAll('sent', 'isSent', true));
+  $('deselectSent').addEventListener('click', () => setAll('sent', 'isSent', false));
+  $('expandAll').addEventListener('click', () => setAllExpanded(true));
+  $('collapseAll').addEventListener('click', () => setAllExpanded(false));
   $('exportBackup').addEventListener('click', exportBackup);
   $('importFile').addEventListener('change', importBackup);
   $('clearCache').addEventListener('click', () => run(async () => {
