@@ -89,8 +89,16 @@ Installa il nuovo `.xpi` con la stessa procedura: impostazioni, note ed email ig
 
 1. Clicca il pulsante **Email senza risposta**: si apre la dashboard.
 2. Scegli il periodo e premi **Analizza**. Durante la scansione puoi **annullare**.
-3. Usa le icone a destra di ogni riga: apri, rispondi, tag, nota, ignora.
-4. Le impostazioni (soglie, parole chiave, cartelle, backup) sono nel pulsante **Opzioni** della dashboard o in **Componenti aggiuntivi → Unanswered Emails Dashboard Pro → Opzioni**.
+3. Nel pannello **Corrispondenti a cui rispondere** vedi chi aspetta una tua risposta: cerca un nome o un indirizzo e cliccalo per vedere solo le sue email; per togliere il filtro usa la ✕ sull'etichetta *Mittente* sopra l'elenco.
+4. Usa le icone a destra di ogni riga: apri, rispondi, tag, nota, ignora (le email ignorate restano nella vista **Ignorate**, da cui puoi ripristinarle).
+5. Le impostazioni sono nel pulsante **Opzioni** della dashboard o in **Componenti aggiuntivi → Unanswered Emails Dashboard Pro → Opzioni**:
+   - **Generale**: soglie dei giorni, periodo predefinito, riconoscimento dall'oggetto;
+   - **Email transazionali**: parole chiave e indirizzi da considerare transazionali;
+   - **Cartelle**: quali cartelle analizzare come *Ricevute* e come *Inviate*, con espandi/comprimi, selezione rapida di tutte le Posta in arrivo / Posta inviata e **Ripristina selezione predefinita**;
+   - **Riepilogo programmato**: le pianificazioni dei riepiloghi via email (vedi sopra);
+   - **Dati e backup**: esportazione/importazione del backup, svuotamento della cache, creazione del tag "Rispondere".
+
+   Le modifiche vengono applicate premendo **Salva**.
 
 ## Permessi richiesti
 
@@ -153,13 +161,13 @@ Questo programma è software libero, distribuito secondo i termini della **GNU A
 **Unanswered Emails Dashboard Pro** is a Thunderbird 128+ (Manifest V3) extension that lists the received emails you have not replied to yet.
 
 - Replies are detected by matching each message's `Message-ID` against the `In-Reply-To` / `References` headers of your sent mail, with an optional fallback on the normalized subject (later message addressed to the sender).
-- All accounts; Inbox and subfolders plus every Sent folder by default, fully configurable; Junk, Trash, Drafts, Templates and Outbox are always excluded.
+- All accounts; Inbox and subfolders plus every Sent folder by default, fully configurable (collapsible tree, select/deselect all Inboxes or Sent folders, restore defaults); Junk, Trash, Drafts, Templates, Outbox and saved searches are always excluded.
 - Dashboard tab with date range, waiting-time badges (configurable thresholds), search, filters, sorting and CSV export.
 - Per-message actions: open, reply, Thunderbird tags (a "To reply" tag is created on first install), personal notes, ignore/restore.
 - "Correspondents to reply to" panel with search; click a sender to filter.
 - Scheduled HTML summary e-mails (daily / weekly / monthly, several schedules and recipients), sent from your Thunderbird account; a summary missed while Thunderbird was closed is sent once at the next start-up.
 - Header cache for fast rescans, JSON backup/restore, Italian and English UI, light/dark theme.
-- No data ever leaves your computer.
+- No data is sent to the developer or to third parties; the only outgoing data is the scheduled summary, if you configure it, sent from your own account to the recipients you choose.
 
 Install: download the `.xpi` from **Releases**, then in Thunderbird open **Add-ons and Themes → ⚙️ → Install Add-on From File…**.
 

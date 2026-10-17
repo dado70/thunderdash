@@ -36,6 +36,8 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ### Changed
 - Settings merge copies default arrays/objects (no shared mutable defaults).
+- README: usage guide for the new features, Thunderbird autostart instructions,
+  privacy section updated for the scheduled summary.
 
 ## [0.1.0] - 2026-10-17
 
