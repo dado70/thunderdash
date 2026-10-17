@@ -129,7 +129,7 @@ Note ed email ignorate restano su questo computer. Se reinstalli l'estensione o 
 ## Roadmap
 
 - Canali di notifica aggiuntivi per il riepilogo: **Telegram** (bot) e **ntfy** (notifiche push open source, anche su server proprio).
-- **Servizio compagno** indipendente da Thunderbird (avviato da un timer di sistema sul PC Linux): legge la posta via IMAP e invia il riepilogo via SMTP anche quando Thunderbird è chiuso.
+- **Servizio compagno** indipendente da Thunderbird, per **Linux e Windows** (macOS non previsto): avviato da un'attività pianificata del sistema (timer *systemd* o *cron* su Linux, *Utilità di pianificazione* su Windows), legge la posta via IMAP e invia il riepilogo via SMTP anche quando Thunderbird è chiuso.
 
 Le modifiche di ogni versione sono descritte nel [CHANGELOG](CHANGELOG.md).
 
@@ -168,6 +168,8 @@ Questo programma è software libero, distribuito secondo i termini della **GNU A
 - Scheduled HTML summary e-mails (daily / weekly / monthly, several schedules and recipients), sent from your Thunderbird account; a summary missed while Thunderbird was closed is sent once at the next start-up.
 - Header cache for fast rescans, JSON backup/restore, Italian and English UI, light/dark theme.
 - No data is sent to the developer or to third parties; the only outgoing data is the scheduled summary, if you configure it, sent from your own account to the recipients you choose.
+
+Roadmap: Telegram and ntfy channels; a companion service for **Linux and Windows** (not macOS) that sends the summary via IMAP/SMTP while Thunderbird is closed.
 
 Install: download the `.xpi` from **Releases**, then in Thunderbird open **Add-ons and Themes → ⚙️ → Install Add-on From File…**.
 
